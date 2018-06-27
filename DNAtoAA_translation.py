@@ -34,7 +34,7 @@ def translation(seq, start=1, end=100000000):
             print('DNA sequence contains letter other than ATCG, please check your sequence.')
         elif len(seq) % 3 == 0:
             if end < len(seq):
-                for i in range(start-1, end-1, 3):
+                for i in range(start-1, end//3*3, 3):
                     codon = seq[i:i+3]
                     protein += table[codon]
             else:
@@ -44,7 +44,7 @@ def translation(seq, start=1, end=100000000):
         else:
             print("Warnning: the sequence length is not divisible by 3! Extra tail sequence will be ignored")
             if end < len(seq):
-                for i in range(start-1, end-1, 3):
+                for i in range(start-1, end//3*3, 3):
                     codon = seq[i:i+3]
                     protein += table[codon]
             else:
