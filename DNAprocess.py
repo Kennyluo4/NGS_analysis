@@ -53,6 +53,23 @@ def translation(seq, start=1, end=100000000):
                     protein += table[codon]
     return  protein
 
+import string
+def complement_seq(text):
+    dic = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N': 'N'}
+    text = text.upper().rstrip()
+    new_seq = ''
+    for l in text:
+        new_seq += dic[l]
+    return new_seq
+def reverse_seq(text):
+    new = ''
+    text = text.upper().rstrip()
+    for i in text:
+        new = i + new
+    return new
+def reverse_complementary_seq(text):
+    new = complement_seq(reverse_seq(text))
+    return new
 
-if __name__ == '__main__':
-    translation(seq)
+#if __name__ == '__main__':
+#    translation(seq)
