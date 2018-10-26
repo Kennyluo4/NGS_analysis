@@ -6,9 +6,9 @@
  I will try to upload everything I worked before and organize them as well as I can
 
 
-** DNAprocess.py is a module used for DNA sequence processing.
+**DNAprocess.py is a module used for DNA sequence processing.
     functions include: get reverse complementary sequence
                        translate DNA sequence to Amio Acid
                    
                    
-** get_fastqc.py is used for get the fastqc report summary of all files (FAIL, WARN and PASS for each parameter). figures are excluded
+**get_fastqc.py is used for get the fastqc report summary of all files (FAIL, WARN and PASS for each parameter). figures are excluded
