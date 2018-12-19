@@ -8,8 +8,8 @@ def help():
     print('Usage: python fasta_handle.py -i <input file> -o <output file> [options]')
     print('  Script will automatically remove redundant sequence, and tag redundant ID (but showed different sequence) with "Copy"')
     print('     option:\n'
-          '     -l cutoff length If assigned with value, only sequence length greater than that value will be kept\n'
-          '     -c count sequence length.')
+          '     -l or --length : Cutoff length If assigned with value, only sequence length greater than that value will be kept\n'
+          '     -c or --count : Count sequence length.')
 def read_fasta(file):
     '''read fasta file, for redundant ID with different sequence, 'Copy' will be added to the redundant ID. Redundant sequence will be removed'''
     dic = {}
