@@ -6,7 +6,7 @@ import sys, getopt
 
 def help():
     print('Usage: python fasta_handle.py -i <input file> -o <output file> [options]')
-    print('  Script will automatically remove redundant sequence, and tag redundant ID(with different sequence) with "Copy"')
+    print('  Script will automatically remove redundant sequence, and tag redundant ID (but showed different sequence) with "Copy"')
     print('     option:\n'
           '     -l cutoff length If assigned with value, only sequence length greater than that value will be kept\n'
           '     -c count sequence length.')
