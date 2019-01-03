@@ -1,5 +1,6 @@
 '''usage: python extract_assembled_id_from_stringtie.py [your gff file]
-    extract the corresponding Stringtie gene ID, transcript ID and ref gene ID for each transcripts Stringtie assembled'''
+    extract the corresponding Stringtie gene ID, transcript ID and ref gene ID for each transcripts Stringtie assembled
+    summarize the unique Stringtie gene ID that have reference gene ID '''
 import sys
 argvs = sys.argv
 file = argvs[1]
