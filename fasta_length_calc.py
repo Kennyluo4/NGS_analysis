@@ -1,4 +1,4 @@
-##usage:   python count_fa.py input.fa>length.txt
+##usage:   python fasta_length_calc.py input.fa>length.txt
 ##  recommend use nohup conmandline&
 
 #!/usr/bin/python
