@@ -1,4 +1,6 @@
-'''usage: python get_align_stat.py [alignment log file]'''
+'''usage: python get_align_stat.py [alignment log file]
+	extract the alignment report from hisat2'''
+
 __author__ = "Ziliang"
 
 import sys
