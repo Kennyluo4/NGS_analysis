@@ -4,12 +4,16 @@
 
 import sys, getopt
 
+
 def help():
     print('Usage: python fasta_handle.py -i <input file> -o <output file> [options]')
-    print('  Script will automatically remove redundant sequence, and tag redundant ID (but showed different sequence) with "Copy"')
-    print('     option:'
-          '     -l or --length : Cutoff length If assigned with value, only sequence length greater than that value will be kept'
-          '     -c or --count : Count sequence length.')
+    print(
+        'Script will automatically remove redundant sequence, and tag redundant ID (but showed different sequence) with "Copy"')
+    print('     option:\n'
+          '     -l or --length : Cutoff length If assigned with value, only sequence length greater than that value will be kept\n'
+          '     -c or --count : Count sequence length.\n')
+
+
 def read_fasta(file):
     '''read fasta file, for redundant ID with different sequence, 'Copy' will be added to the redundant ID. Redundant sequence will be removed'''
     dic = {}
@@ -38,7 +42,7 @@ def read_argv(argv):
     output = 'output.fasta'
     count = 'no'
     try:
-        opts, agrs = getopt.getopt(argv, 'hi:o:l:c', ['ifile=','ofile=', 'length=', 'count='])
+        opts, agrs = getopt.getopt(argv, 'hi:o:l:c', ['ifile=', 'ofile=', 'length=', 'count='])
     except:
         print('getopt error')
         help()
@@ -53,7 +57,7 @@ def read_argv(argv):
         elif opt in ('-o', '--ofile'):
             output = arg
         elif opt in ('-l', '--length'):
-            cutoff = arg
+            cutoff = float(arg)
             print('length cutoff is:', cutoff)
         elif opt in ('-c', '--count'):
             count = 'yes'
@@ -61,6 +65,7 @@ def read_argv(argv):
     print('input file is:', file)
     print('output file is:', output)
     return file, output, cutoff, count
+
 
 def sum_fasta(file, output, cutoff, count):
     res = []
@@ -70,12 +75,12 @@ def sum_fasta(file, output, cutoff, count):
     cutoff_num = 0
     len_res = []
     fasta_dic, redundant_id = read_fasta(file)
-    if type(cutoff) is str:                 #no length cutoff
+    if type(cutoff) is str:  # no length cutoff
         for k, v in fasta_dic.items():
             if v not in non_redun_dic.values():
                 uniq += 1
                 lenth = str(len(v))
-                len_res.append(k + ':' + lenth + '\n')   #sum the sequence length
+                len_res.append(k + ':' + lenth + '\n')  # sum the sequence length
                 non_redun_dic[k] = v
                 res.append(k + '\n' + v + '\n')
             else:
@@ -84,7 +89,7 @@ def sum_fasta(file, output, cutoff, count):
         for k, v in fasta_dic.items():
             if v not in non_redun_dic.values():
                 uniq += 1
-                if v >= cutoff:
+                if len(v) >= cutoff:
                     cutoff_num += 1
                     lenth = str(len(v))
                     len_res.append(k + ':' + lenth + '\n')
@@ -97,7 +102,7 @@ def sum_fasta(file, output, cutoff, count):
     print('there is %d unique sequence' % uniq)
     print('there is %d redundant sequences' % same_seq)
     if type(cutoff) is not str:
-        print('There is %d nonredundant sequence >= cutoff length')
+        print('There is %d nonredundant sequence >= cutoff length' % cutoff_num)
     if count == 'no':
         with open('%s' % output, 'w') as file:
             file.writelines(res)
@@ -107,7 +112,7 @@ def sum_fasta(file, output, cutoff, count):
         with open('%s' % output, 'w') as file:
             file.writelines(res)
 
-            
+
 if __name__ == '__main__':
     ifile, outfile, lenth, count = read_argv(sys.argv[1:])
     if ifile == '':
