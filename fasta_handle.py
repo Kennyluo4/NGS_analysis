@@ -19,6 +19,7 @@ def read_fasta(file):
     dic = {}
     redundant_id = []
     f = open(file)
+    ith = 0
     for lines in f:
         if lines.startswith('>'):
             seq = ''
@@ -26,7 +27,8 @@ def read_fasta(file):
             if id not in dic.keys():
                 dic[id] = seq
             else:
-                id += "Copy"
+                ith += 1
+                id += "Copy" +str(ith)
                 redundant_id.append(id)
                 dic[id] = seq
         else:
