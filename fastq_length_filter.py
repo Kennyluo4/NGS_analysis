@@ -22,7 +22,11 @@ if __name__ == '__main__' :
     cut = int(cutoff_set())
     sample_list = []
     obj = {}
-    file_list = glob.glob('*.fastq.gz')
+    file_list = glob.glob('*.fq.gz')
+    if len(file_list) == 0:
+        file_list = glob.glob('*.fastq.gz')
+    if len(file_list) == 0:
+        print("no file (.fq.gz or .fastq.gz) detected.")
     for finame in file_list:     #for each sample, create a list for storing long and short reads
         sample_id = finame.split('_')[0]
         if sample_id not in sample_list:
