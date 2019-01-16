@@ -5,10 +5,11 @@
 
  I will try to upload everything I worked before and organize them as well as I can
 
-
-DNAprocess.py is a module used for DNA sequence processing.
-    functions include: get reverse complementary sequence
-                       translate DNA sequence to Amio Acid
-                   
-                   
-get_fastqc.py is used for get the fastqc report summary of all files (FAIL, WARN and PASS for each parameter). figures are excluded
+| script | function|
+| ---| --- |
+| DNAprocess.py | a module used for DNA sequence processing.functions include: get reverse complementary sequence translate DNA sequence to Amio Acid |                   
+| get_fastqc.py | used for get the fastqc report summary of all files (FAIL, WARN and PASS for each parameter). figures are excluded
+| fastq_length_filter.py| from trimmomatic result fastq files. classify reads with different length range based on the cutoff. output 2 (long and short) fastq files |
+| ---| --- |
+| ---| --- |
+| ---| --- |
