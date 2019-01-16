@@ -6,7 +6,7 @@ import glob
 def cutoff_set():
     cutoff = 30
     argvs = sys.argv
-    print(argvs)
+    #print(argvs)
     if len(argvs) < 2:
         print('no length cutoff assigned, default is 30bp')
     elif len(argvs) > 2:
