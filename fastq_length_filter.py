@@ -26,8 +26,6 @@ if __name__ == '__main__' :
     for finame in file_list:     #for each sample, create a list for storing long and short reads
         sample_id = finame.split('_')[0]
         if sample_id not in sample_list:
-            # globals()[sample_id + 'long'] = []
-            # globals()[sample_id + 'short'] = []
             obj[sample_id + '_long'] = []
             obj[sample_id + '_short'] = []
             sample_list.append(sample_id)
