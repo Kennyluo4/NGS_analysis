@@ -100,7 +100,7 @@ def sum_fasta(file, output, cutoff, count):
             else:
                 same_seq += 1
 
-    print('redundant IDs:', redundant_id)
+    print('redundant IDs with different sequence:', redundant_id)
     print('there is %d unique sequence' % uniq)
     print('there is %d redundant sequences' % same_seq)
     if type(cutoff) is not str:
