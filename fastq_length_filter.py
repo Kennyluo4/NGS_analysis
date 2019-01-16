@@ -1,7 +1,6 @@
 '''usage: python fastq_length_filter.py [cutoff]
 from trimmomatic result fastq files. classify reads with different length range based on the cutoff'''
-import sys
-import glob
+import sys, glob, gzip
 
 def cutoff_set():
     cutoff = 30
@@ -17,8 +16,6 @@ def cutoff_set():
     return cutoff
 
 if __name__ == '__main__' :
-    import gzip
-
     cut = int(cutoff_set())
     sample_list = []
     obj = {}
