@@ -19,8 +19,9 @@ trim_out_file = get_file('trim','.out')
 res = [['file', 'Input Read Pairs', 'Both Surviving', 'Forward Only Surviving', 'Reverse Only Surviving', 'Dropped']]
 for file in trim_out_file:
     for lines in open(file):
-        if lines.startswith('SRR'): #need to be consistent with the echo $value , which should be printed before trimming. (see sbatch submission file)
-            trim_1file = [lines.strip()] #add the file name being trimmed
+        if ".fastq.gz" in lines:   # read the Trimmomatic arguments line
+            file_name = lines.strip().split(' ')[0]
+            trim_1file = [file_name] #add the file name being trimmed
             #trim_1file.append(lines.strip())
         if 'Input Read Pairs' in lines:
             items = lines.strip().split(' ')
