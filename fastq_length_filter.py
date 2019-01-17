@@ -25,13 +25,13 @@ if __name__ == '__main__' :
     if len(file_list) == 0:
         print("no file (.fq.gz or .fastq.gz) detected.")
     for finame in file_list:     #for each sample, create a list for storing long and short reads
-        sample_id = finame.split('_')[0]
+        sample_id = finame.split('_')[0].split('.')[0]
         if sample_id not in sample_list:
             obj[sample_id + '_long'] = []
             obj[sample_id + '_short'] = []
             sample_list.append(sample_id)
     for file in file_list:
-        samples = file.split('_')[0]
+        samples = file.split('_')[0].split('.')[0]
         f = gzip.open(file, 'rt').readlines() #default 'rb' is for read as binary. 'rt' read as text
         for i in range(0, len(f), 4):    #read every four lines in fastq for each sequence
             seq = f[i + 1].strip()
