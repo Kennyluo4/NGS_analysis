@@ -41,7 +41,7 @@ if __name__ == '__main__' :
                 obj[samples + '_short'] += f[i:(i+4)]
 
     for keys in obj.keys():
-        with open('%s_reads.fastq' % keys, 'w') as handle:
+        with gzip.open('%s_reads.fq.gz' % keys, 'w') as handle:
             handle.writelines(obj[keys])
 
 
