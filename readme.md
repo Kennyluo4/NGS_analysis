@@ -5,7 +5,7 @@
 
     I will try to upload everything I worked before and organize them as well as I can
 
-| script | function|
+| script | function*|
 | ---| --- |
 | DNAprocess.py | a module used for DNA sequence processing.functions include: get reverse complementary sequence translate DNA sequence to Amio Acid |                   
 | get_fastqc.py | used for get the fastqc report summary of all files (FAIL, WARN and PASS for each module). figures are excluded
