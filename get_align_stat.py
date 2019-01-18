@@ -6,13 +6,13 @@ __author__ = "Ziliang"
 import sys
 import csv
 def get_file():
-	argvs = sys.argv
-	if len(argvs) <= 1:
-		print("no file")
-	elif len(argvs) >2:
-		print("too many input")
-	else:
-		return argvs[1]
+    argvs = sys.argv
+    if len(argvs) <= 1:
+        print("no file")
+    elif len(argvs) >2:
+        print("too many input")
+    else:
+        return argvs[1]
 
 res = []
 row = []
