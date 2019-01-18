@@ -15,4 +15,5 @@
 | get_align_stat.py| extract alignment statistics from Hisat2 |
 | extract_assembled_id_from_stringtie.py| extract ref gene ID, transcript ID and assembled stringtie gene ID. (recommend to use mstrg_prep.py to avoid this step) |
 | ---| --- |
+ 
  \* for specific requirement or usage, please look into the script file.
