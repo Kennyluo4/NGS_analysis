@@ -1,5 +1,5 @@
 ##usage:   python fasta_length_calc.py input.fa>length.txt
-##  recommend use nohup conmandline&
+##  recommend to use nohup conmandline&
 
 #!/usr/bin/python
 import sys,os,re
