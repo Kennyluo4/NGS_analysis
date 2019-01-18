@@ -1,4 +1,5 @@
-
+'''uasge: python get_trim_report.py
+    use to get trim report from trimming log file from Trimmomatic. log file must have 'trim' and 'log' in file name. e.g. trimming_log.out '''
 
 import os
 import csv
