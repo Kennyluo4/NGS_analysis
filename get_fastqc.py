@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+'''usage: python get_fasqc.py
+    script will scan through fastqc.zip file. Must be put within the same directory of fastqc report'''
 # Import necessary libraries:
 import csv
 import os
