@@ -17,8 +17,9 @@ def get_file(pattern,type, path = cwd):
 
 
 trim_out_file = get_file('trim','.out')
-res = [['file', 'Input Read Pairs', 'Both Surviving', 'Forward Only Surviving', 'Reverse Only Surviving', 'Dropped']]
+
 for file in trim_out_file:
+    res = [['file', 'Input Read Pairs', 'Both Surviving', 'Forward Only Surviving', 'Reverse Only Surviving', 'Dropped']]
     for lines in open(file):
         if ".fastq.gz" in lines:   # read the Trimmomatic arguments line
             file_name = lines.strip().split(' ')[0]
@@ -39,7 +40,7 @@ for file in trim_out_file:
         else:
             continue
 
-with open('trim_res.csv', 'w') as handle:
-    writer = csv.writer(handle, dialect='excel')
-    for row in res:
-        writer.writerow(row)
+    with open('trim_res%s.csv' % file, 'w') as handle:
+        writer = csv.writer(handle, dialect='excel')
+        for row in res:
+            writer.writerow(row)
