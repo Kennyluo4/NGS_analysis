@@ -23,7 +23,8 @@ def read_file():
         file_list = glob.glob('*.fastq.gz')
     if len(file_list) == 0:
         print("no file (.fq.gz or .fastq.gz) detected.")
-    for finame in file_list:     #for each sample, create a list for storing long and short reads
+    #for each sample, create a list for storing long and short reads
+    for finame in file_list:
         sample_id = finame.split('_')[0].split('.')[0]
         if sample_id not in sample_list:
             sample_list.append(sample_id)
@@ -63,7 +64,8 @@ if __name__ == '__main__' :
     obj, filelist, samplelist, filetype = read_file()
     paired_files = {}
     for file in filelist:
-        if 'U' in file or 'Unpair' in file:     #(1)handle unpaired reads file
+        # (1)handle unpaired reads file
+        if 'U' in file or 'Unpair' in file:
             samples = file.split('.')[0].split('_')[0]
             f = gzip.open(file, 'rt').readlines()     #default 'rb' is for read as binary. 'rt' read as text
             for i in range(0, len(f), 4):             #read every four lines in fastq for each sequence
@@ -72,7 +74,8 @@ if __name__ == '__main__' :
                     obj[samples + '_unpaired_long'] += f[i:(i+4)]
                 else:
                     obj[samples + '_unpaired_short'] += f[i:(i+4)]
-        elif 'P' in file or 'Pair' in file:      #(2.1)handle paired reads file, first collect paired files by sample
+        # (2.1)handle paired reads file, first collect paired files by sample
+        elif 'P' in file or 'Pair' in file:
             samples = file.split('.')[0].split('_')[0]
             if samples not in paired_files.keys():
                 paired_files[samples] = [file]
@@ -90,9 +93,11 @@ if __name__ == '__main__' :
         for i in range(0, len(f2), 4):
             readID = f2[i].split(' ')[0]
             pair2[readID] = f2[i:(i + 4)]
-        paired_read = set(pair1.keys()) & set(pair2.keys())                      # paired reads ID
-        unpaired_reads = (pair1.keys() - pair2.keys()) | (pair2.keys() - pair1.keys())  #(2.2)select unpaired reads in paired files
-        for k in paired_read:                              #(2.3)for each paired reads present in two files, classify them by cutoff length
+        paired_read = set(pair1.keys()) & set(pair2.keys())     # paired reads ID
+        #(2.2)pick up unpaired reads in paired files
+        unpaired_reads = (pair1.keys() - pair2.keys()) | (pair2.keys() - pair1.keys())
+        #(2.3)for each paired reads present in two files, classify them by cutoff length
+        for k in paired_read:
             if len(pair1[k][1]) > cut or len(pair2[k][1]) >= cut:
                 obj[sample + '_pair1_long'] += pair1[k]
                 obj[sample + '_pair2_long'] += pair2[k]
