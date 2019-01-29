@@ -118,6 +118,8 @@ if __name__ == '__main__' :
 
     for keys in obj.keys():
         print(keys)
+        if obj[keys] == []:
+            print("empty file is: %s" % keys)
         with gzip.open('%s_reads.fq.gz' % keys, 'wt') as handle:
             handle.writelines(obj[keys])
 
