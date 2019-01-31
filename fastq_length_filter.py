@@ -85,11 +85,17 @@ if __name__ == '__main__' :
     for sample, pairfiles in paired_files.items():
         pair1 = {}
         pair2 = {}
-        f1 = gzip.open(pairfiles[0], 'rt').readlines()
+        #paired files should include 'pair' or 'P'. e.g. '1P', '2P'(standard output from Trimmomatic), or 'pair1','pair2'
+        if 'Pair1' in pairfiles[0] or '1P' in pairfiles[0]:
+            f1 = gzip.open(pairfiles[0], 'rt').readlines()
+            f2 = gzip.open(pairfiles[1], 'rt').readlines()
+        else:
+            f1 = gzip.open(pairfiles[1], 'rt').readlines()
+            f2 = gzip.open(pairfiles[0], 'rt').readlines()
+        #for paird reads in paired files, collect the sequence for each read
         for i in range(0, len(f1), 4):
             readID = f1[i].split(' ')[0]
             pair1[readID] = f1[i:(i + 4)]
-        f2 = gzip.open(pairfiles[1], 'rt').readlines()
         for i in range(0, len(f2), 4):
             readID = f2[i].split(' ')[0]
             pair2[readID] = f2[i:(i + 4)]
