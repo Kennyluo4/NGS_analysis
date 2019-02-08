@@ -101,7 +101,7 @@ if __name__ == '__main__' :
             pair2[readID] = f2[i:(i + 4)]
         paired_read = set(pair1.keys()) & set(pair2.keys())     # paired reads ID
         #(2.2)pick up unpaired reads in paired files
-        unpaired_reads = (pair1.keys() - pair2.keys()) | (pair2.keys() - pair1.keys())
+        unpaired_reads = set(pair1.keys() - pair2.keys()) | set(pair2.keys() - pair1.keys())
         #(2.3)for each paired reads present in two files, classify them by cutoff length
         for k in paired_read:
             if len(pair1[k][1]) > cut or len(pair2[k][1]) >= cut:
@@ -114,7 +114,7 @@ if __name__ == '__main__' :
             if ky in pair1.keys():
                 if len(pair1[ky][1]) > cut:
                     obj[samples + '_unpaired_long'] += pair1[ky]
-                elif len(pair2[ky][1]) < cut:
+                elif len(pair1[ky][1]) < cut:
                     obj[samples + '_unpaired_short'] += pair1[ky]
             elif ky in pair2.keys():
                 if len(pair2[ky][1]) > cut:
