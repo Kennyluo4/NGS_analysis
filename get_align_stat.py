@@ -24,8 +24,8 @@ pair_once = "paired unique aligned"
 unpair_once = "unpaired unique aligned"
 overall_rate = "overall aligned rate"
 type = "single end reads"
-file = get_file()
-# file = "align_pe_combine_log.out"
+# file = get_file()
+file = "align_to_gm__31871888.log"
 
 for lines in open(file):
     itms = lines.split(" ")
@@ -58,6 +58,9 @@ for lines in open(file):
             unpaired_read = itms[2] + itms[3]
     if "overall alignment rate" in lines:
             overall_rate = itms[0]
+#add last sample
+res.append([sampleID, total_read, paired_read, pair_once, unpaired_read, unpair_once, overall_rate])
+
 print("the reads for alignment is %s" % type)
 with open("alignment_stat.csv", "w") as file:
     writer = csv.writer(file)
