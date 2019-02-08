@@ -29,10 +29,14 @@ file = get_file()
 
 for lines in open(file):
     itms = lines.split(" ")
-    if ".fq" in lines or ".fastq" in lines:      #identify samples. must print sampleID before each hisat2 run
+    #skip the annotation or header
+    if lines.startswith('#'):
+        continue
+    #read samples. must print sampleID or command line before each hisat2 run
+    if ".fq" in lines or ".fastq" in lines:
         row = [sampleID, total_read, paired_read, pair_once, unpaired_read, unpair_once, overall_rate]
         res.append(row)
-        sampleID = lines.strip()
+        sampleID = [i for i in lines.strip().split(" ")][-1].split('_')[0]
         total_read = ""
         pair_once = ""
         unpair_once = ""
