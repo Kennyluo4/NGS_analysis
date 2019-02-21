@@ -24,8 +24,8 @@ pair_once = "paired unique aligned"
 unpair_once = "unpaired unique aligned"
 overall_rate = "overall aligned rate"
 type = "single end reads"
-# file = get_file()
-file = "align_to_gm__31871888.log"
+file = get_file()
+# file = "align_to_gm__31871888.log"
 
 for lines in open(file):
     itms = lines.split(" ")
