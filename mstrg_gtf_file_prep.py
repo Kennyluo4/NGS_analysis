@@ -1,5 +1,5 @@
 #!/bin/env python3
-#Usage: mstrg_prep.py merged.gtf > merged_prep.gtf
+#Usage: python mstrg_prep.py stringtie_merged_se.gtf > stringtie_merged_se_IDmodified.gtf
 #appending refgene ID to stringtie assigned ID (MSTRG.*) if the gene region includes a ref gene
 
 import re, fileinput
@@ -11,17 +11,18 @@ for line in fileinput.input():
   if len(t)<9:
     print(line)
     continue
-  mgid=re.search('gene_id "(MSTRG\.\d+)"', t[8])
+  mgid=re.search('gene_id "(MSTRG\.\d+)"', t[8])                #search if GeneID in annotation column .
   if mgid:
-    gid=mgid.group(1)
+    gid=mgid.group(1)            #matched geneID
     prep.append([line, gid])
-    mrn = re.search('ref_gene_id "([^"]+)', t[8])
+    #mrn = re.search('ref_gene_id "([^"]+)', t[8])
     #or if you want gene_name:
-    #mrn = re.search('gene_name "([^"]+)', t[8])
-    if mrn:
+    mrn = re.search('gene_name "([^"]+)', t[8])
+    if mrn:            
       rn = mrn.group(1)
       h=g.get(gid)
-      if h: h.add(rn)
+      if h: 
+        h.add(rn)
       else: g[gid]={ rn }
   else:
     print(line)
