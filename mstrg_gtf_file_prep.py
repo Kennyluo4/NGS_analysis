@@ -5,8 +5,8 @@
 import re, fileinput
 g = {}     #gene_id => {ref_gene_ids}
 prep = []  #array of [line, mstrg_id]
-# for line in fileinput.input():
-for line in open("stringtie_merged_pe.gtf"):
+for line in fileinput.input():
+# for line in open("stringtie_merged_pe.gtf"):
     line = line.rstrip()
     t = line.split('\t')
     if len(t) < 9:
