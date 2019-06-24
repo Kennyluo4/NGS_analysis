@@ -1,6 +1,6 @@
 #!/bin/env python3
 #Usage: python mstrg_prep.py stringtie_merged_se.gtf > stringtie_merged_se_IDmodified.gtf
-#appending refgene ID to stringtie assigned ID (MSTRG.*) if the gene region includes a ref gene
+#appending refgene name to stringtie assigned gene ID (MSTRG.*) if the gene region includes a ref gene
 
 import re, fileinput
 g = {} #gene_id => {ref_gene_ids}
