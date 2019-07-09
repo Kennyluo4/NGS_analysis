@@ -16,7 +16,7 @@
 | extract_assembled_id_from_stringtie.py| extract ref gene ID, transcript ID and assembled stringtie gene ID. (recommend to use mstrg_prep.py to avoid this step) |
 | class_transform.py| transform result from OrthoMCL, classify by species within a category  |
 | reciprocol_blast_selection.py| Get the top hit pairs for reciprocal blast |
-| get_MATS_result.py| handling rMATS result. Summarizing all the significant alternative splicing even from different files output from rMATS |
+| get_MATS_result.py| handling rMATS result. Summarizing all the significant alternative splicing even from different output files from rMATS |
 | ---| --- |
  
  \* for specific requirement or usage, please look into the script file.
