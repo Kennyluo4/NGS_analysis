@@ -26,7 +26,7 @@ def result_filter(file, p_thredshold=0.01):
         try:
             p_value = float(p_value)
         except ValueError:
-            res.append(lines)
+            res.append("AStype\t" + lines)
             continue
         if p_value <= p_thredshold:
             res.append(AS_type +'\t' + lines)
