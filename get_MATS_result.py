@@ -36,7 +36,7 @@ def result_filter(file, p_thredshold=0.01):
             continue
     genes = set(genes)
     num_gene_AS = len(genes)
-    print("There are %d significantly %s splicing events in %d genes" % (num, AS_type, num_gene_AS))
+    print("There are %d significantly %s splicing events in %d genes\n" % (num, AS_type, num_gene_AS))
     return res
 
 if __name__ == '__main__' :
@@ -49,7 +49,7 @@ if __name__ == '__main__' :
         final_res1 += res_f
     with open("MATS_JC_result.txt", "w") as handle:
         handle.writelines(final_res1)
-    print("result with P-value<=0.01 from *JC.txt is in MATS_JC_result.txt")
+    print("***result with P-value<=0.01 from *JC.txt is in MATS_JC_result.txt***")
 
     for fs in file_list2:       #read JCEC.txt result files
         print("Processing\t%s" % fs)
@@ -57,4 +57,4 @@ if __name__ == '__main__' :
         final_res2 += res_f
     with open("MATS_JCEC_result.txt", "w") as handle:
         handle.writelines(final_res2)
-    print("result with P-value<=0.01 from *JCEC.txt is in MATS_JCEC_result.txt")
+    print("***result with P-value<=0.01 from *JCEC.txt is in MATS_JCEC_result.txt***")
