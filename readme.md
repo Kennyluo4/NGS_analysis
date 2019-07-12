@@ -17,6 +17,8 @@
 | class_transform.py| transform result from OrthoMCL, classify by species within a category  |
 | reciprocol_blast_selection.py| Get the top hit pairs for reciprocal blast |
 | get_MATS_result.py| handling rMATS result. Summarizing all the significant alternative splicing even from different output files from rMATS |
+| counting_transcripts.py| counting the number of transcripts in GFF/GTF file. |
+| ---| --- |
 | ---| --- |
  
  \* for specific requirement or usage, please look into the script file.
