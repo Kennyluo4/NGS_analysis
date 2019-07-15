@@ -3,7 +3,10 @@ def help():
           "counting the transcripts number in a GTF file")
 import sys
 argv = sys.argv
-f = argv[1]
+try:
+    f = argv[1]
+except  IndexError:
+    help()
 print(f)
 # f = open("stringtie_merged_pe_IDmodified.gtf")
 num = 0
