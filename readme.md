@@ -1,7 +1,7 @@
 
 # Scripts collection for analysis
 
-* this is the collection of all the analysis scripts I used.
+* this is the collection of all the analysis scripts majorly used for sequencing study.
 
     
 
