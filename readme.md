@@ -1,9 +1,9 @@
 
 # Scripts collection for analysis
 
-* this is the collection of all the biological study analysis scripts I used.
+* this is the collection of all the analysis scripts majorly used for sequencing study.
 
-    I will try to upload everything I worked before and organize them as well as I can
+    
 
 | script | function*|
 | ---| --- |
