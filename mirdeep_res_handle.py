@@ -51,21 +51,21 @@ def renameFile(IDdictionary): #IDditionanry is dic of {"current Tag": "Sample ID
             if key in files:
                 newFileName = files.replace(key, value)
                 os.rename(files, newFileName)
-#
-# def main():
-#     renameOpt = get_argvs()
-#     IDpair, mapingstats = read_logfile()
-#     if renameOpt:
-#         renameFile(IDpair)
-#     with open("mapping_stat.txt", "w") as file:
-#         file.writelines(mapingstats)
 
-
-if __name__ == "__main__":
-    # main()
+def main():
     renameOpt = get_argvs()
     IDpair, mapingstats = read_logfile()
     if renameOpt:
         renameFile(IDpair)
     with open("mapping_stat.txt", "w") as file:
         file.writelines(mapingstats)
+
+
+if __name__ == "__main__":
+    main()
+    # renameOpt = get_argvs()
+    # IDpair, mapingstats = read_logfile()
+    # if renameOpt:
+    #     renameFile(IDpair)
+    # with open("mapping_stat.txt", "w") as file:
+    #     file.writelines(mapingstats)
