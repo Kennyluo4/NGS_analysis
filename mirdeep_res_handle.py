@@ -4,13 +4,15 @@
 def help():
     print("use: python mirdeep_res_handle.py [option]. \n"
           "Put result file in the same directory,\textract the mapping statistics of mirdeep2 result\n"
-          "\t[option] -r or --rename: rename the files, replacing time tag by sample ID")
+          "\t[option] -r or --rename: rename the files, replacing time tag by sample ID\n"
+          "\t[option] -c or --count: summarize the read count of all known miRNA from quantifier module")
 
 def get_argvs():
     import sys, getopt
     rename = False
+    countread = False
     try:
-        opts, remainder = getopt.getopt(sys.argv[1:], "hr", ["help", "rename"])
+        opts, remainder = getopt.getopt(sys.argv[1:], "hrc", ["help", "rename", "count"])
     except:
         help()
         sys.exit(2)
@@ -20,7 +22,9 @@ def get_argvs():
             sys.exit()
         elif opt in ("-r", "--rename"):
             rename = True
-    return rename
+        elif opt in ("-c", "--count"):
+            countread = True
+    return rename, countread
 
 def read_logfile():
     """matching time tag with sampleID
@@ -52,11 +56,30 @@ def renameFile(IDdictionary): #IDditionanry is dic of {"current Tag": "Sample ID
                 newFileName = files.replace(key, value)
                 os.rename(files, newFileName)
 
+def extractRawCount():
+    import glob
+    import pandas as pd
+    res = pd.DataFrame()
+    countFiles = glob.glob("miRNAs_expressed_all_samples*.csv")
+    # f_num = 0
+    file_dic = {}
+    for f in countFiles:
+        sampleID = f.replace("miRNAs_expressed_all_samples", "").replace(".csv", "")
+        file_dic[f] = pd.read_csv(f, '\t')   #read each file as dataframe by pandas
+        # file_dic["f%d" % f_num].rename(columns = {"read_count":sampleID+"_reads"})
+        if "#miRNA" not in res.columns:
+            res["#miRNA"] = file_dic[f]["#miRNA"]
+        res[sampleID+"_ReadCount"] = file_dic[f]["read_count"]
+    res.to_excel("known_miRNA_reads_count_all.xlsx")
+    print("raw read counts of all samples write to known_miRNA_reads_count_all.xlsx")
+
 def main():
-    renameOpt = get_argvs()
+    renameOpt, readcount = get_argvs()
     IDpair, mapingstats = read_logfile()
     if renameOpt:
         renameFile(IDpair)
+    if readcount:
+        extractRawCount()
     with open("mapping_stat.txt", "w") as file:
         file.writelines(mapingstats)
 
