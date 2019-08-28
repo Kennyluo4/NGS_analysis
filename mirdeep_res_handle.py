@@ -44,6 +44,7 @@ def renameFile(IDdictionary):
     """rename files in current directory based on input ID dictionary"""
     import os
     pwd = os.getcwd()
+    print("Rename files in:" + pwd)
     fileNames = os.listdir(pwd)
     for files in fileNames:
         for key, value in IDdictionary.items():
