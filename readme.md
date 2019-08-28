@@ -19,6 +19,10 @@
 | get_MATS_result.py| handling rMATS result. Summarizing all the significant alternative splicing even from different output files from rMATS |
 | counting_transcripts.py| counting the number of transcripts in GFF/GTF file. |
 | extractGOfromGFF.py| extract GO ids from gff3 file |
+| mirdeep_res_handle.py| read report.log files from mirdeep2.pl result |
 | ---| --- |
+| ---| --- |
+ 
+ 
  
  \* for specific requirement or usage, please look into the script file.

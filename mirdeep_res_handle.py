@@ -40,7 +40,7 @@ def read_logfile():
                 res.append(stats)
     return IDdic, res
 
-def renameFile(IDdictionary):
+def renameFile(IDdictionary): #IDditionanry is dic of {"current Tag": "Sample ID"}
     """rename files in current directory based on input ID dictionary"""
     import os
     pwd = os.getcwd()
