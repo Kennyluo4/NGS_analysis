@@ -13,31 +13,6 @@ def help():
           '     -l or --length : Cutoff length If assigned with value, only sequence length greater than that value will be kept\n'
           '     -c or --count : Count sequence length.\n')
 
-
-def read_fasta(file):
-    '''read fasta file, for redundant ID with different sequence, 'Copy' will be added to the redundant ID. Redundant sequence will be removed'''
-    dic = {}
-    redundant_id = []
-    f = open(file)
-    ith = 0
-    for lines in f:
-        if lines.startswith('>'):
-            seq = ''
-            id = lines.strip().split(' ')[0]
-            if id not in dic.keys():
-                dic[id] = seq
-            else:
-                ith += 1
-                id += "Copy" +str(ith)
-                redundant_id.append(id)
-                dic[id] = seq
-        else:
-            line = lines.strip()
-            dic[id] += line
-    f.close()
-    return dic, redundant_id
-
-
 def read_argv(argv):
     cutoff = ''
     file = ''
@@ -67,6 +42,31 @@ def read_argv(argv):
     print('input file is:', file)
     print('output file is:', output)
     return file, output, cutoff, count
+
+
+def read_fasta(file):
+    '''read fasta file, for redundant ID with different sequence, 'Copy' will be added to the redundant ID. Redundant sequence will be removed'''
+    dic = {}
+    redundant_id = []
+    f = open(file)
+    ith = 0
+    for lines in f:
+        if lines.startswith('>'):
+            seq = ''
+            id = lines.strip().split(' ')[0]
+            if id not in dic.keys():
+                dic[id] = seq
+            else:
+                ith += 1
+                id += "Copy" +str(ith)
+                redundant_id.append(id)
+                dic[id] = seq
+        else:
+            line = lines.strip()
+            dic[id] += line
+    f.close()
+    return dic, redundant_id
+
 
 
 def sum_fasta(file, output, cutoff, count):
