@@ -75,8 +75,8 @@ def extractRawCount():
         if "#miRNA" not in res.columns:
             res["#miRNA"] = file_dic[f]["#miRNA"]
         res[sampleID+"_ReadCount"] = file_dic[f]["read_count"]
-    res.to_excel("known_miRNA_reads_count_all.xlsx")
-    print("raw read counts of all samples write to known_miRNA_reads_count_all.xlsx")
+    res.to_csv("known_miRNA_reads_count_all.csv")
+    print("raw read counts of all samples write to known_miRNA_reads_count_all.csv")
 
 def main():
     renameOpt, readcount = get_argvs()
