@@ -61,6 +61,7 @@ def renameFile(IDdictionary): #IDditionanry is dic of {"current Tag": "Sample ID
                 continue
 
 def extractRawCount():
+    """read read count file for known miRNA then merge the total read count for each sample"""
     import glob
     import pandas as pd
     res = pd.DataFrame()
