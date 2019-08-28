@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """read report.log files from mirdeep2.pl result"""
+import pandas,glob,sys,os,re
 
 def help():
     print("use: python mirdeep_res_handle.py [option]. \n"
@@ -55,6 +56,9 @@ def renameFile(IDdictionary): #IDditionanry is dic of {"current Tag": "Sample ID
             if key in files:
                 newFileName = files.replace(key, value)
                 os.rename(files, newFileName)
+            elif value in files:
+                print("sample ID alread added to %s" % files)
+                continue
 
 def extractRawCount():
     import glob
@@ -64,7 +68,7 @@ def extractRawCount():
     # f_num = 0
     file_dic = {}
     for f in countFiles:
-        sampleID = f.replace("miRNAs_expressed_all_samples", "").replace(".csv", "")
+        sampleID = f.replace("miRNAs_expressed_all_samples_", "").replace(".csv", "")
         file_dic[f] = pd.read_csv(f, '\t')   #read each file as dataframe by pandas
         # file_dic["f%d" % f_num].rename(columns = {"read_count":sampleID+"_reads"})
         if "#miRNA" not in res.columns:
