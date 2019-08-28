@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """read report.log files from mirdeep2.pl result"""
-import pandas,glob,sys,os,re
+# import pandas,glob,sys,os,re
 
 def help():
     print("use: python mirdeep_res_handle.py [option]. \n"
