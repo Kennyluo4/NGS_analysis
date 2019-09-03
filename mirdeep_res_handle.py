@@ -7,7 +7,7 @@ def help():
     print("use: python mirdeep_res_handle.py [option]. \n"
           "Put result file in the same directory,\textract the mapping statistics of mirdeep2 result\n"
           "\t[option] -r or --rename: rename the files, replacing time tag by sample ID\n"
-          "\t[option] -c or --count: summarize the read count of all known miRNA from quantifier module")
+          "\t[option] -c or --count: summarize the read count of all known miRNA from quantifier module and novel/known mirna count from mirdeep2 module")
 
 def get_argvs():
     import sys, getopt
@@ -79,6 +79,60 @@ def extractRawCount():
     res.to_csv("known_miRNA_reads_count_all.csv")
     print("raw read counts of all samples write to known_miRNA_reads_count_all.csv")
 
+def read_result_file():
+    res = []
+    mirnalist = []
+    file_dic = {}
+    import glob, csv, statistics
+    fs = glob.glob("result*.csv")
+    for f in fs:
+        sampleID = f.replace("result_","").replace(".csv", "")
+        file = open(f)
+        f_reader = csv.reader(file, delimiter = "\t" ) #the result.csv file from mirDeep2 actually uses "\t" as delimiter instead of ","
+        temp_res = {} #for storing mirna result for one sample/file
+        for row in f_reader:
+            if len(row) != 0 and row[0].startswith("arahy"):   #the mirdeep2 identified mature and novel mirna start with a tag ID of chromosome + number
+                # use known mirna ID + sequence as mirna tag
+                if "TRUE" in row or "STAR" in row:
+                    mirna = row[10] + ":" + row[14] #known miRNA
+                    if mirna not in temp_res.keys():
+                        temp_res[mirna] = [int(row[6])]  # list of mature counts as value
+                    else:
+                        temp_res[mirna].append(int(row[6]))  # add to list for mirna in different location
+                else:
+                    mirna = row[10] + ":" + row[13] #novel mirna
+                    if mirna not in temp_res.keys():
+                        temp_res[mirna] = [int(row[5])]  # list of mature counts as value
+                    else:
+                        temp_res[mirna].append(int(row[5]))  # add to list for mirna in different location
+                if mirna not in mirnalist:
+                    mirnalist.append(mirna) #add mirna tag to list
+            else:
+                continue
+        # get the sample ID, dic[novel RNA] = [count1, count2]
+        for k, v in temp_res.items():
+            temp_res[k] = statistics.mean(v)     # calculate the mean count for each miRNA
+        file_dic[sampleID] = temp_res
+    header = ["sample"]
+    for rna in mirnalist:
+        oneline = []
+        oneline.append(rna)
+        for sample, mirnadic in file_dic.items():
+            if sample not in header:
+                header.append(sample)
+            if rna in mirnadic.keys():
+                oneline.append(mirnadic[rna])
+            else:
+                oneline.append('NA')
+        res.append(oneline)
+
+    with open('mirdeep2_identified_mirna_count.csv', 'w') as file:
+        file_writer = csv.writer(file)
+        file_writer.writerow(header)
+        for row in res:
+            file_writer.writerow(row)
+        print("read counts of mirdeep2 predicted mirna write to mirdeep2_identified_mirna_count.csv")
+
 def main():
     renameOpt, readcount = get_argvs()
     IDpair, mapingstats = read_logfile()
@@ -86,6 +140,7 @@ def main():
         renameFile(IDpair)
     if readcount:
         extractRawCount()
+        read_result_file()
     with open("mapping_stat.txt", "w") as file:
         file.writelines(mapingstats)
 
