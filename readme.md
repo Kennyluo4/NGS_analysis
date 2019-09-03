@@ -20,7 +20,7 @@
 | counting_transcripts.py| counting the number of transcripts in GFF/GTF file. |
 | extractGOfromGFF.py| extract GO ids from gff3 file |
 | mirdeep_res_handle.py| read report.log files from mirdeep2.pl result |
-| ---| --- |
+| Pynut| My package for biological analysis. |
 | ---| --- |
  
  
