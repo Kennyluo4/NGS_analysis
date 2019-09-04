@@ -92,28 +92,38 @@ def read_result_file():
         temp_res = {} #for storing mirna result for one sample/file
         for row in f_reader:
             if len(row) != 0 and row[0].startswith("arahy"):   #the mirdeep2 identified mature and novel mirna start with a tag ID of chromosome + number
-                # use known mirna ID + sequence as mirna tag
-                if "TRUE" in row or "STAR" in row:
-                    mirna = row[10] + ":" + row[14] #known miRNA
-                    if mirna not in temp_res.keys():
-                        temp_res[mirna] = [int(row[6])]  # list of mature counts as value
+                if "TRUE" in row or "STAR" in row:  #for known miRNA
+                    mirna = row[10] #+ ":" + row[14]
+                    if mirna not in mirnalist:      #add mirna ID to total mirna id list for all sample
+                      mirnalist.append(mirna)
+                    if mirna not in temp_res.keys():  # add mirna count to each mirna
+                        temp_res[mirna] = [int(row[6])]
                     else:
-                        temp_res[mirna].append(int(row[6]))  # add to list for mirna in different location
-                else:
-                    mirna = row[10] + ":" + row[13] #novel mirna
-                    if mirna not in temp_res.keys():
+                        temp_res[mirna].append(int(row[6]))
+                else:     #for novel miRNA
+                    if row[10] == "-":
+                        mirna = row[13]      # use sequence as ID
+                        if mirna not in mirnalist:
+                            if len([m for m in mirnalist if mirna[1:-1] in m]) == 0:#trim first 1 and last NT to avoid novel mirna variant between different samples
+                                mirnalist.append(mirna)    #add to mirnalist if there is not variant
+                            else:    #if the trimmed sequencing is already in there, used that one as the mirna ID
+                                mirna = str([m for m in mirnalist if mirna[1:-1] in m][0])
+                                mirnalist.append(mirna)
+                    else:
+                        mirna = row[10]      # use ortholog miRNA in other specie  as ID
+                        if mirna not in mirnalist:  # add mirna ID to total mirna id list for all sample
+                            mirnalist.append(mirna)
+                    if mirna not in temp_res.keys():    #add mirna count to each mirna
                         temp_res[mirna] = [int(row[5])]  # list of mature counts as value
                     else:
                         temp_res[mirna].append(int(row[5]))  # add to list for mirna in different location
-                if mirna not in mirnalist:
-                    mirnalist.append(mirna) #add mirna tag to list
             else:
                 continue
         # get the sample ID, dic[novel RNA] = [count1, count2]
         for k, v in temp_res.items():
             temp_res[k] = statistics.mean(v)     # calculate the mean count for each miRNA
         file_dic[sampleID] = temp_res
-    header = ["sample"]
+    header = ["mirna"]
     for rna in mirnalist:
         oneline = []
         oneline.append(rna)
