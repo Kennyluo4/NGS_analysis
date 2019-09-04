@@ -108,7 +108,6 @@ def read_result_file():
                                 mirnalist.append(mirna)    #add to mirnalist if there is not variant
                             else:    #if the trimmed sequencing is already in there, used that one as the mirna ID
                                 mirna = str([m for m in mirnalist if mirna[1:-1] in m][0])
-                                mirnalist.append(mirna)
                     else:
                         mirna = row[10]      # use ortholog miRNA in other specie  as ID
                         if mirna not in mirnalist:  # add mirna ID to total mirna id list for all sample
