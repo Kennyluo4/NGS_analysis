@@ -92,14 +92,14 @@ def read_result_file():
         temp_res = {} #for storing mirna result for one sample/file
         for row in f_reader:
             if len(row) != 0 and row[0].startswith("arahy"):   #the mirdeep2 identified mature and novel mirna start with a tag ID of chromosome + number
-                if "ahy-" in row:  #for known miRNA
+                if any("ahy-" in col for col in row):  #for known miRNA
                     mirna = row[9] #+ ":" + row[14]
                     if mirna not in mirnalist:      #add mirna ID to total mirna id list for all sample
                       mirnalist.append(mirna)
                     if mirna not in temp_res.keys():  # add mirna count to each mirna
-                        temp_res[mirna] = [int(row[6])]
+                        temp_res[mirna] = [int(row[5])]
                     else:
-                        temp_res[mirna].append(int(row[6]))
+                        temp_res[mirna].append(int(row[5]))
                 else:     #for novel miRNA
                     if row[10] == "-":
                         mirna = row[13]      # use sequence as ID
@@ -120,7 +120,7 @@ def read_result_file():
                 continue
         # get the sample ID, dic[novel RNA] = [count1, count2]
         for k, v in temp_res.items():
-            temp_res[k] = statistics.mean(v)     # calculate the mean count for each miRNA
+            temp_res[k] = int(statistics.mean(v))     # calculate the mean count for each miRNA
         file_dic[sampleID] = temp_res
     header = ["mirna"]
     for rna in mirnalist:
