@@ -92,8 +92,8 @@ def read_result_file():
         temp_res = {} #for storing mirna result for one sample/file
         for row in f_reader:
             if len(row) != 0 and row[0].startswith("arahy"):   #the mirdeep2 identified mature and novel mirna start with a tag ID of chromosome + number
-                if "ahy-" in row:  # for known miRNA
-                    mirna = row[9]  # + ":" + row[14]
+                if "ahy-" in row:  #for known miRNA
+                    mirna = row[9] #+ ":" + row[14]
                     if mirna not in mirnalist:      #add mirna ID to total mirna id list for all sample
                       mirnalist.append(mirna)
                     if mirna not in temp_res.keys():  # add mirna count to each mirna
