@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+'''use: python prepare_mireap_map.py mapfile_to_genome.arf'''
 import sys
 
 f = sys.argv[1]
