@@ -3,7 +3,8 @@ mkdir alignment
 module load hisat2 samtools trimmomatic java
 module load gcc cutadapt
 #make sure no space in mirna reads
-----------------trimming using trimmomatic-----------------------
+
+###skip this software###-----------trimming using trimmomatic-----------------------
 # for file in *_R1.fastq.gz; do echo ${file%R*}; trimmomatic PE ${file%R*}R1.fastq.gz ${file%R*}R2.fastq.gz -baseout ${file%R*}R.fq.gz ILLUMINACLIP:/ufrc/wang/luoziliang/nodulation/genome/adaptor.1.19.fasta:2:30:10:8:true LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:20; done
 
 #after trimming, concatenate the paired and unpaired files respectively
