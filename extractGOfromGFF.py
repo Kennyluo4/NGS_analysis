@@ -1,5 +1,6 @@
 """"extract the GO id from the gff3 annotation file
-    use: extractGOfromGFF.py filename.gff3"""""
+    use: extractGOfromGFF.py filename.gff3
+    only works if the GO ID were grouped in Onthology_term column"""""
 
 
 import sys, csv
