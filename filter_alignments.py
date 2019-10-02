@@ -1,10 +1,10 @@
 
 def help():
-    print("use: python filter_alignments.py [options] -i <inputFile>"
-          "This is for filter small RNA reads alignment  used in miRDP2"
-          "-i, --input <blastfile>: assign the input blast file"
-          "-m, --max [int]: the maximum number of multi-alignment, default is 15"
-          "-f, --fasta <fastafile>: assign the fasta file needded to be filtered by -m option")
+    print("use: python filter_alignments.py [options] -i <inputFile>\n"
+          "This is for filter small RNA reads alignment  used in miRDP2\n"
+          "-i, --input <blastfile>: assign the input blast file\n"
+          "-m, --max [int]: the maximum number of multi-alignment, default is 15\n"
+          "-f, --fasta <fastafile>: assign the fasta file needded to be filtered by -m option\n")
 
 import getopt, sys
 def getoptions():
@@ -48,9 +48,10 @@ def filterFasta(file, countDic,filter=15):
     with open(outf, "w") as handle:
         for i in range(0, len(f), 2):
             readID = f[i].strip().replace(">", "")
-            if countDic[readID] <= filter:
-                handle.write(f[i])
-                handle.write(f[i+1])
+            if readID in countDic.keys():  
+                if countDic[readID] <= filter:
+                    handle.write(f[i])
+                    handle.write(f[i+1])
 
 def main():
     # import sys
