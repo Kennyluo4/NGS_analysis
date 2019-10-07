@@ -93,7 +93,7 @@ def read_result_file():
         for row in f_reader:
             if len(row) != 0 and row[0].startswith("arahy"):   #the mirdeep2 identified mature and novel mirna start with a tag ID of chromosome + number
                 if any("ahy-" in col for col in row):  #for known miRNA
-                    mirna = row[9] #+ ":" + row[14]
+                    mirna = row[9] +"|"+ row[10] + ":" + row[13]
                     if mirna not in mirnalist:      #add mirna ID to total mirna id list for all sample
                       mirnalist.append(mirna)
                     if mirna not in temp_res.keys():  # add mirna count to each mirna
@@ -109,7 +109,7 @@ def read_result_file():
                             else:    #if the trimmed sequencing is already in there, used that one as the mirna ID
                                 mirna = str([m for m in mirnalist if mirna[1:-1] in m][0])
                     else:
-                        mirna = row[10]      # use ortholog miRNA in other specie  as ID
+                        mirna = row[10] + ":" + row[13]      # use ortholog miRNA in other specie  as ID
                         if mirna not in mirnalist:  # add mirna ID to total mirna id list for all sample
                             mirnalist.append(mirna)
                     if mirna not in temp_res.keys():    #add mirna count to each mirna
