@@ -20,13 +20,13 @@ for lines in open(file):          #each line is an orthogroup
         ortho = ""
         for prot in itms:     #collect the orthologs from other species
             if any(i in prot for i in spc):
-                ortho += "|" + prot
+                ortho += " " + prot
         for prot in itms:     #append collected orthologs to targeted transcripts
             if 'seq' in prot:  #find targeted transcripts
                 if prot not in res.keys():
                     res[prot] = ortho
                 else:
-                    res[prot] += "|" + ortho
+                    res[prot] += " " + ortho
 
 with open("ortho_result.csv", "w") as file:
     writer = csv.writer(file)
