@@ -12,10 +12,11 @@ except IndexError:
 
 res = {}
 #define a list containing other species' abbriviation (ortholog species)
-spc = ['ahy', 'lja', 'glm', 'mtr']
+spc = ['ahy|', 'lja|', 'glm|', 'mtr|']
 for lines in open(file):          #each line is an orthogroup
+# for lines in open('orthotest.txt'):
     if 'seq' in lines and any([i in lines for i in spc]):       #if orthogroup has target transcript(start with 'seq|') and other species protein
-        itms = lines.strip().replace('OG\d*: ', '').split('\t')
+        itms = lines.strip().replace('OG\d*: ', '').replace('\t', ' ').split(' ')
         ortho = ""
         for prot in itms:     #collect the orthologs from other species
             if any(i in prot for i in spc):
