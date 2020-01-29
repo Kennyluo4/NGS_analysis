@@ -43,7 +43,7 @@ def read_alignment_query(f):
     return readDic
 
 def filterFasta(file, countDic,filter=15):
-    outf = file.split(".")[0] + "_filter" + str(filter) + ".fa"
+    outf = file.split(".")[0] + "_filtered" + ".fa"
     print('output filtered fasta file is %s.' % outf)
     f = open(file).readlines()
     with open(outf, "w") as handle:
@@ -65,12 +65,17 @@ def main():
     output = input.split(".")[0] + "_filter" + str(alignment) + ".bst"
     print('output filtered file is %s.' % output)
     read_dic = read_alignment_query(input)
+    line = 0
     with open(input, "r") as handle:
         with open(output, "w") as outhandle:
             for ln in handle:
+                line += 1
                 reads = ln.strip().split('\t')[0]
                 if read_dic[reads] <= int(alignment):
                     outhandle.write(ln)
+                if line%5000 == 0:
+                    #print process for every 5k alignment
+                    print("processed %s alignment" % line)
     if fastafile:
         filterFasta(fastafile, read_dic, int(alignment))
 
