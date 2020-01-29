@@ -32,6 +32,7 @@ def getoptions():
     return blstfile, align, fastafile
 
 def read_alignment_query(f):
+    #count the alignment file, output the dictionray[read ID] = number of alignment hit
     readDic = {}
     for line in open(f):
         reads = line.strip().split('\t')[0]
@@ -54,11 +55,14 @@ def filterFasta(file, countDic,filter=15):
                     handle.write(f[i+1])
 
 def main():
-    # import sys
-    # argvs = sys.argv
-    # input = argvs[1]
+    import sys
+    argvs = sys.argv
+    input = argvs[1]
     input, alignment, fastafile = getoptions()
-    output = input.split(".")[0] + "_filtered" + str(alignment) + ".bst"
+    # input = "GSM2094927.bst"
+    # alignment = 15
+    # fastafile = "GSM2094927.fa"
+    output = input.split(".")[0] + "_filter" + str(alignment) + ".bst"
     print('output filtered file is %s.' % output)
     read_dic = read_alignment_query(input)
     with open(input, "r") as handle:
