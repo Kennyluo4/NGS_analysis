@@ -51,8 +51,8 @@ def filterFasta(file, countDic,filter=15):
         for i in range(0, len(f), 2):
             readID = f[i].strip().replace(">", "")
             line +=1
-            if line % 5000 == 0:
-                # print process for every 5k alignment
+            if line % 10000 == 0:
+                # print process for every 10k alignment
                 print("processed %s reads" % line)
             if readID in countDic.keys():  
                 if countDic[readID] <= filter:
@@ -78,8 +78,8 @@ def main():
                 reads = ln.strip().split('\t')[0]
                 if read_dic[reads] <= int(alignment):
                     outhandle.write(ln)
-                if line%5000 == 0:
-                    #print process for every 5k alignment
+                if line%10000 == 0:
+                    #print process for every 10k alignment
                     print("processed %s alignment" % line)
     if fastafile:
         filterFasta(fastafile, read_dic, int(alignment))
