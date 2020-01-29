@@ -46,9 +46,14 @@ def filterFasta(file, countDic,filter=15):
     outf = file.split(".")[0] + "_filtered" + ".fa"
     print('output filtered fasta file is %s.' % outf)
     f = open(file).readlines()
+    line = 0
     with open(outf, "w") as handle:
         for i in range(0, len(f), 2):
             readID = f[i].strip().replace(">", "")
+            line +=1
+            if line % 5000 == 0:
+                # print process for every 5k alignment
+                print("processed %s reads" % line)
             if readID in countDic.keys():  
                 if countDic[readID] <= filter:
                     handle.write(f[i])
