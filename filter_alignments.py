@@ -43,7 +43,7 @@ def read_alignment_query(f):
     return readDic
 
 def filterFasta(file, countDic,filter=15):
-    outf = file.split(".")[0] + "_filtered" + str(filter) + ".fa"
+    outf = file.split(".")[0] + "_filter" + str(filter) + ".fa"
     print('output filtered fasta file is %s.' % outf)
     f = open(file).readlines()
     with open(outf, "w") as handle:
