@@ -1,7 +1,7 @@
 
 # Scripts collection for analysis
 
-* this is the collection of all the analysis scripts majorly used for sequencing study.
+* This is the list of all the analysis scripts used for sequencing projects (RNAseq (longRNA and smallRNA) and WGBS). But this list is not always uptodate, check the scripts directly for more information.
 
     
 
