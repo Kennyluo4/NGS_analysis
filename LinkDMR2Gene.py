@@ -1,5 +1,6 @@
 '''link DSS DMR result.csv with nearby/overlapped gene in a gtf file
-    upstream and downstream 2k '''
+    upstream and downstream 2k
+    Usage: python3 LinkDMR2Gene.py DMR_file GTFfile'''
 import pandas as pd
 import sys
 
@@ -54,12 +55,12 @@ def overlap(s1, e1, s2, e2):
     return type
 
 def main():
-    # argvs = sys.argv
-    # dmrf = argvs[1]
-    # gtff = argvs[2]
-    # print('DMR file is %s, and GTF file is %s' % (dmrf, gtff))
-    gtff = 'test.gtf'
-    dmrf = 'dmr_CG_2hpi.csv'
+    argvs = sys.argv
+    dmrf = argvs[1]
+    gtff = argvs[2]
+    print('DMR file is %s, and GTF file is %s' % (dmrf, gtff))
+    # gtff = 'test.gtf'
+    # dmrf = 'dmr_CG_2hpi.csv'
     df = pd.read_csv(dmrf)
     g_coord = read_gtf(gtff)
 
