@@ -61,6 +61,7 @@ def main():
     print('DMR file is %s, and GTF file is %s' % (dmrf, gtff))
     # gtff = 'test.gtf'
     # dmrf = 'dmr_CG_2hpi.csv'
+    outfile = dmrf.replace('.csv', '_with_genes.csv')
     df = pd.read_csv(dmrf)
     g_coord = read_gtf(gtff)
 
@@ -81,7 +82,8 @@ def main():
                 continue
         nearbygenes = ';'.join(nearbygenesList)
         df.loc[index, 'nearby_gene'] = nearbygenes
-    df.to_csv('DMR_gene_annotation.csv')
+    df.to_csv(outfile)
+    print('output file: %s' % outfile)
 
 if __name__=='__main__':
     main()
