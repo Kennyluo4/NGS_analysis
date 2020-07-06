@@ -1,0 +1,347 @@
+###Small RNA seq analysis log
+###Ziliang Luo
+
+
+----------------------- QC -----------------------
+module load fastqc gcc multiqc
+mkdir fastqc
+fastqc *.fq.gz -o fastqc/
+cd fastqc/
+python36 get_fastqc.py
+	#generate all_mod_scores.csv report for fastqc
+multiqc .
+	#generate multiqc_report.html webpage report for fastqc
+--------------------------------------------------
+
+
+----------------------- filter reads from bacteria -----------------------
+module load sortmerna
+# Attention: for paired reads, the software only take one input fasta file. need to merge paired reads first.
+# merge-paired-reads.sh 10_S22_1P.fastq 10_S22_2P.fastq 10_merged.fastq
+# for i in *1P.fastq; do merge-paired-reads.sh ${i} ${i%_*}_2P.fastq ${i%%_*}_merged.fastq; done
+
+#build index in nodulation/genome file 
+indexdb_rna --ref ~/ufrc/wang/luoziliang/nodulation/genome/peanut_rRNA_tRNA_final.fasta,peanut_rrna_trna_index
+# -L: seed length. default is 18. must be even number
+
+#remove bacteria reads
+sortmerna -m 4096 --log --num_alignments 1 --fastx --ref ~/ufrc/nodulation/genome/lb8_genome/lb8crm.fasta,/ufrc/wang/luoziliang/nodulation/genome/lb8_genome/lb8crm_index --reads S6-2-1.fq --aligned S621_lb8.fq --other S621_ah.fq
+#remove tRNA and rRNA
+sortmerna -m 4096 --log --num_alignments 1 --fastx --ref /home/luoziliang/ufrc/nodulation/genome/lb8_genome/lb8crm.fasta,/ufrc/wang/luoziliang/nodulation/genome/lb8_genome/lb8crm_index --reads S7-H-4.fq --aligned S7H4_lb8.fq --other S7H4_ah.fq.fq 
+#remove snoRNA and snRNA
+sortmerna -m 4096 -a 4 --log --num_alignments 1 --fastx --ref ~/ufrc/nodulation/genome/sno_snRNA/combined_sn_snoRNA.fasta,/ufrc/wang/luoziliang/nodulation/genome/sno_snRNA/snrna_snorna_index --reads S7H2_ah_small.fq --aligned S7H2_sn_snoRNA --other S7H2_ah_mir
+
+# -m: Mb ram to use
+# -log: output overall statistics file
+# --num-alignments: set 1 to output the first alignment passing E-value threshold (best choice if only filtering is needed-once have hit,considered as rRNA reads). defult:0 output all alignment.
+# --fastx: output FASTA/FASTQ file for aligned or other reads.
+# --aligned: path and base name of aligned read file
+# --other: path and base name of rejected read file 
+# --paired_in: put both pair to --aligned (rrna reads) file if one of the pair hit rRNA
+# --paired-out: put both pair to --other (non-rrna reads) if only one of the pair hit rRNA
+#separate merged unaligned files to paired files
+unmerge-paired-reads.sh 10_non_rrna.fastq 10_nonrrna_1P.fq 10_nonrrna_2P.fq
+#for i in *non_rrna.fastq; do unmerge-paired-reads.sh ${i} ${i%%_*}_nonrrna_1P.fq ${i%%_*}_nonrrna_2P.fq; done
+
+--------------------------------------------------------------------------
+
+
+----------------------- filter out reads from canonical non-coding RNA(tRNA, rRNA) -----------------------
+module load sortmerna
+sortmerna -m 4096 --log --num_alignments 1 --fastx --ref ~/ufrc/nodulation/genome/peanut_rRNA_tRNA_final.fasta,/ufrc/wang/luoziliang/nodulation/genome/peanut_rrna_trna_index --reads S621_ah.fq --aligned S621_tRNA_rRNA --other S621_ah_small
+
+-----------------------------------------------------------------------------------------------------------
+
+
+----------------------filter reads by bowtie2-----------------------
+module load samtools bamutil bowtie2
+for f in *.fq.gz; do echo $f; bowtie2 -p 5 -x /ufrc/wang/luoziliang/nodulation/genome/peanut_rRNA_tRNA_lb8_sn_snoRNA -U $f -S ${f%%_*}_map2db.bam; done
+for f in *map2db.bam; do samtools view -F 4 -b $f > ${f%_*}_other.bam; samtools view -f 4 -b $f > ${f%_*}_clean.bam; done
+# -f include reads with all  of the FLAGs,     (Flag: 4 unmapped reads )
+# -F include reads NOT with flags
+
+for f in *_clean.bam; do bam bam2FastQ --in $f --unpairedOut ${f%_*}.fq;done
+
+
+
+#check reads containmination
+#take first 20000 reads
+head -n 40000 6122.fasta>6122_test.fa
+#randomly select 2000 reads
+seqtk sample -s100 6122.fasta 2000 > 6122_test2.fa
+#blast on ncbi
+
+
+-----------------------mirna alignment and novel mirna mining-----------------------
+###############################################################
+##################discover mirna by mirdeep2###################
+###############################################################
+1. alignment by mirDeep2
+#mirDeep2 maps reads to the genome with bowtie, using these options: bowtie –f –n 0 –e 80 –l 18 –a –m 5 –best –strata.
+#mapping of the known mature and star miRNA sequences against the known precursor miRNAs for the reference species is done with these options: bowtie –f –v 0 –a –best –strata –norc.
+#-v number of mismatch reads
+
+#index genome
+module load bowtie mirdeep 
+bowtie-build arahy.Tifrunner.gnm1.KYV3.genome_main.fna tif_gnm_bt
+
+#transfer fastq file to fasta file 
+module load seqtk
+for f in *_merged_short_reads.fq; do seqtk seq -a ${f} > ${f%.*}.fasta; done
+
+#align to genome
+mapper.pl ../10_merged_short_reads_rev.fasta -c -j -m -r 26 -p ~/ufrc/nodulation/genome/tif_gnm_bt -s 10_short_clp.fa -t 10_short_clp_to_genome.arf -v
+for f in S6*ah_small.fasta;do mapper.pl ${f} -c -j -m -r 26 -p ~/ufrc/nodulation/genome/tif_gnm_bt -s mirdeep/${f%%_*}_clp.fa -t mirdeep/${f%%_*}_to_genome.arf -v; done
+for f in S7*ah_small.fasta;do mapper.pl ${f} -c -j -m -r 26 -p ~/ufrc/nodulation/genome/tif_gnm_bt -s mirdeep/${f%%_*}_clp.fa -t mirdeep/${f%%_*}_to_genome.arf -v; done
+#map combined reads to genome for novel miRNA prediction if your species doesn't have many known miRNA
+# output: bowtie.log, 2 collapsed files(*clp*.arf:mapping file, *clp*.fa) 
+# -c: designate that input file is a FASTA
+# -d: designate that input file is config file
+# -j: remove non-canonical letter (not atucgn or ATUCGN)
+# -l: filter option, assign read length threshold that should be dropped
+# -m: collapses the reads
+# -p: maps the processed reads against the previously indexed genome 
+# -s: designates the name of the output file of processed reads
+# -t: designates the name of the output file of the genome mappings
+# -r: allow number of multi alignment to genome. default 5, (In legume species, the largest miRNA family is 26 for soybean and medicargo.Therefore, use 26 as threshold)
+#the mapper.pl will collapse the reads to the format that miRDP2 accept
+
+2.predict novel miRNA in peanut, using mirDP2 for prediction, which implemented newest plant miRNA identification standard
+##############################################################
+##################dicover miRNA by miRDP2#####################
+##############################################################
+#blast known miRNA to peanut genome to roughly estimate the miRNA families in peanut.
+blastall -p blastn -d legume_mature_miRNA.fasta -i mirdp2_P_mature.fasta -e 1e-4 -m 9 -o result
+
+module load bowtie viennarna
+#build index for genome and non-miRNA noncoding RNAs (tRNA+rRNA+snRNA+snoRNA)
+bowtie-build -f ./non_mirna_ncRNA.fasta ./scripts/index/rfam_index
+cd ./TestData
+bowtie-build --threads 4 -f peanut_genome.fa peanut.genome
+
+#TestData to see if software works
+bash 1.1.1/miRDP2-v1.1.1_pipeline.bash -L 26 -g ./TestData/TAIR10_genome.fa -i TestData/TAIR10.genome -f TestData/GSM2094927.fa -o .
+
+#the reads must be de-duplicated, reads ID must ends with "_x{int}", this type reads can be obtained by mirdeep2 after mapper.pl (collapsed reads)
+#use mapper.pl in mirdeep2 to collapese the reads first.
+
+#merge all reads in your experiment to do the prediction
+cat *fq >combined.fa
+mapper.pl combined.fasta -o 5 -c -j -m -r 26 -p ~/ufrc/nodulation/genome/tif_gnm_bt -s combined_clp.fa -t combined_to_genome.arf -v
+
+
+#!!!!!limitation in miRDP2!!!!!!!, the miRDP2 perl script used for filtering multi-alignment takes up too much memory(size ~ the size of *.bst file), usually will kill the program if trying to run the combined data
+#use in-house python script to manually do the filtering
+python3 filter_alignments.py -i combine_clp-15-0-10.bst -m 30 -f combine_clp-15-0-10.fa
+
+#then run the rest of the miRDP2 script for prediction. 
+
+##############################################################
+#################discover miRNA by mireap#####################
+##############################################################
+(completed, but hard to incorporate result with miRDP2, choose either one for prediction. miRDP2 is suggested though because it's newer and abide by new plant miRNA standard)
+
+#use procesed reads and mapping file from mirdeep2 mapper.pl module
+mkdir mireap
+cd mireap/
+mkdir testdata
+cp ../../mirdeep/S*. ./testdata
+#adjust reads to mireap standard. separate the number of identical reads with "_x"
+for f in *.fa;do echo ${f}; sed -i 's/x/x /g' ${f};done
+
+#check the read tag ID
+head S6H1_clp.fa
+	>seq_0_x 209444
+	CCCTTGTCGCTTCGATTCGT
+	>seq_209444_x 196744
+	CCTTGTCGCTTCGATTCGT
+
+#extract the map file from .arf mapping file of mirdeep
+for f in *_to_genome.arf; do python36 prepare_mireap_map.py ${f}; done
+
+#check the map file 
+head S6H1_map.txt
+
+#run the main program
+module load mireap
+mireap.pl -i S6121_clp.fa -m S6121_map.txt -r ~/ufrc/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fna -A 19 -B 24 -a 20 -b 24 -u 26 -s 3 -v 5 -t S6121 -o ../
+for f in *_clp.fa;do echo ${f} ${f%_*}_map.tx ${f%_*}; mireap.pl -i ${f} -m ${f%_*}_map.txt -r ~/ufrc/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fna -A 19 -B 24 -a 19 -b 24 -u 15 -s 3 -v 5 -t ${f%_*} -o ../ ;done
+###############################################################
+
+
+# after novel miRNA prediction, identify the miRNA families from these predicted miRNA
+# be careful for the U/T format in RNA/DNA file
+# bowtie-build Ath_legume_miRBase.fasta legume_mature_miRNA
+# bowtie -f -v 0 -a --best --strata --norc legume_mature_miRNA mirdp2_P_mature.fasta mapped.bwt
+
+bowtie -f -v 2 -a --best --strata --norc legume_mature_miRNA mirdp_mature.fasta mapped1mismatch.bwt
+	# reads processed: 228
+	# reads with at least one reported alignment: 141 (61.84%)
+	# reads that failed to align: 87 (38.16%)
+	# Reported 894 alignments
+
+# ###note: some miRNA have more(>=2) mismatch with Legume species, but have perfect match with maize. should use more miRNA from miRBase 
+# module load ncbi_blast
+# formatdb -i Ath_legume_miRBase.fasta -p F
+# blastall -a 1 -p blastn -d Ath_legume_miRBase.fasta -i mirdp_mature.fasta -o mirdp2miRBase -e 1e-6 -m 9
+# #  select the smallest evalue hit for each predicted miRNA, alignment length >=19
+# blastall -a 1 -p blastn -d Ath_legume_miRBase.fasta -i mirdp_mature.fasta -o mirdp2miRBase -e 1e-6 -m 9 -q -2 -W 28
+
+
+# fast quantitation of reads mapping to known miRBase precursors.
+# need to load python2 as default
+# load predicted miRNA sequence from miRDP2 as known miRNA sequence 
+quantifier.pl -p ahy_premature.fasta -m ahy_mature.fasta -r 10_short_clp.fa
+for f in *short_clp.fa;do quantifier.pl -p ~/ufrc/nodulation/genome/mirna/ahy_premature.fasta -m ~/ufrc/nodulation/genome/mirna/ahy_mature.fasta -r ${f}; done
+output: expression.html; expression.csv; pdf
+-W: read counts are weighed by their number of mappings. e.g. A read maps twice so each position gets 0.5 added to its read profile
+-g: number of allowed mismatches when mapping reads to precursors, default 1
+-e: number of nucleotides upstream of the mature sequence to consider, default 2
+-f: number of nucleotides downstream of the mature sequence to consider, default 5
+-y: [time], add time/tag to result
+#do not use mirdeep2 module for quantification because mirdeep2 is only designed for animal miRNA, and their novel miRNA quantification for plant miRNA is not accurate.
+
+#after quantification, there might be some redundant quantification for one miRNA sequence, use known_count_handle.py script to calculate average read count.
+
+
+
+
+#####################################################################
+#######quantification by bowtie map to genome count by htseq#########
+#####################################################################
+bowtie -n 0 -l 18 -e 80 -m 26 -a --best --strata /ufrc/wang/luoziliang/nodulation/genome/tif_gnm_bt S7-H-4.fq -S quantification_bowtie/7H4.sam
+# bowtie -v 1 -a --best --strata --norc ~/ufrc/nodulation/genome/tif_gnm_bt S7-H-4.fq  mapped1mismatch.bwt
+# -n mode: no more than -n mismatches (where N is a number 0-3) in the first -l bases
+# -a and --best:  causes bowtie to report only those alignments in the best alignment 
+# --norc:  bowtie will not attempt to align against the reverse-complement reference strand
+module load htseq
+htseq-count -q -i ID -t miRNA -o S6H1 -s no S6-H-1.sam mirdp2final.gff3| tee S6H1_count; done
+# -i GFF attribute to be used as feature ID, e.g. "gene_id" "Name", it's specified in the last column of gff file
+# -t feature type (3rd column in GFF file) to be used, e.g. "exon" "mRNA"
+# -s whether data is from stranded library.  default is yes
+# -q quiet. not report progress
+for f in *.sam; do echo start $f; htseq-count -q -i ID -t miRNA -o ${f%.*} -s no $f mirdp2final.gff3| tee ${f%.*}_count; done
+#combine the *_count information and use DESeq2 for differential expression analysis.
+
+
+#the differential expression analysis result is similar for the two quantification methods. bowtie+HTseq is more stringent since it only count reads aligned to genome and had multiple aligned <26.
+------------------------------------------------------------------------------------------
+
+
+
+----------------------- differentially expression analysis -----------------------
+library("DESeq2")
+countData <- as.matrix(read.csv("known_mirna_count.csv", row.names=1))
+colData <- read.csv('sample.csv', row.names=1)
+#Check all sample IDs in colData are also in CountData and match their orders
+all(rownames(colData) %in% colnames(countData))
+
+colData1 = subset(colData, group%in%c("E6_2hpi","E6_control"))
+colData2 = subset(colData, group%in%c("E6_12hpi","E6_control"))
+
+#remove unnecessary factor levels in subset from orignal dataset
+colData1$treatment = factor(colData1$treatment)
+colData2$treatment = factor(colData2$treatment)
+colData1$group = factor(colData1$group)
+colData2$group = factor(colData2$group)
+
+#countData columnname must be same order of rownames of colData
+countData1 <- countData[, rownames(colData1)]
+countData2 <- countData[, rownames(colData2)]
+
+all(rownames(colData1) == colnames(countData1))
+all(rownames(colData2) == colnames(countData2))
+
+dds1 <- DESeqDataSetFromMatrix(countData = countData1,colData = colData1, design=~group)
+dds2 <- DESeqDataSetFromMatrix(countData = countData2,colData = colData2, design=~group) 
+#estimating size factors, and fit model
+dds1 <- DESeq(dds1)
+dds2 <- DESeq(dds2)
+#to result
+res1 <- results(dds1,contrast = c("group","E6_2hpi","E6_control"))
+res2 <- results(dds2,contrast = c("group","E6_12hpi","E6_control"))
+
+#plot normalized count number between treatment
+plotCounts(dds1, gene=which.min(res1$padj), intgroup="treatment")
+plotCounts(dds2, gene=which.min(res1$padj), intgroup="treatment")
+
+#variance stabilizing transformations, similar to log2 transformation
+vsdata1 <- varianceStabilizingTransformation(dds1, blind=FALSE)
+vsdata2 <- varianceStabilizingTransformation(dds2, blind=FALSE)
+ 
+#plot the PCA of samples 
+plotPCA(vsdata1, intgroup="treatment")
+
+#heatmap of samples 
+library(pheatmap)
+#calculate the distance between samples 
+sampleDists1 <- as.matrix(dist(t(assay(vsdata1))))
+sampleDists2 <- as.matrix(dist(t(assay(vsdata2))))
+#ploting
+library("RColorBrewer")
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDists2,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+
+#get the baseMean expression of all samples
+countData <- countData[, rownames(colData)]
+dds <- DESeqDataSetFromMatrix(countData = countData,colData = colData, design=~group)
+dds <- DESeq(dds)
+baseMeanPerLvl <- sapply( levels(dds$group), function(lvl) rowMeans( counts(dds,normalized=TRUE)[,dds$group == lvl] ) )
+write.csv(baseMeanPerLvl,'basemean_per_sample.csv')
+#plot the average expression of all mirna in all samples
+tiff(filename = "expression_heatmap_all.tiff", width = 2000, height = 2000,res = 400)
+pheatmap(baseMeanPerLvl,color=my_palette,cex=1,scale="row",border_color = NA,treeheight_row=30,treeheight_col=40,lwd=0.8, fontsize_row = 5)
+dev.off()
+
+#write DE result to files
+write.csv(res1, "E6_2vsC.csv")
+write.csv(res2, "E6_12vsC.csv")
+----------------------------------------------------------------------------------
+
+
+---------------------------miRNA target prediction-------------------------------
+##############################
+psRNAtarget 3
+
+##############################
+
+##############################
+####Targetfinder 1
+#the targetfinder.pl script uses ssearch34 function in fasta34 software, hpc installed only fasta36, need to change the assigned software to ssearch36 in targetfinder.pl
+module load fasta
+module load perl/5.16.0
+TargetFinder/targetfinder_threads.pl -f mirdp2_P_mature.fasta -d transcripts.adj.fa -o DEmir_targetfinder_result -t 4
+#or for single sequence
+perl TargetFinder/targetfinder.pl -s AAGCTCAGGAGGGATAGCGCC -d transcripts.adj.fa >test
+#The targetfinder_threads.pl script normally has issues, use python script to run targetfinder.pl for each miRNA in the fasta file
+python excute_target_finder.py mirdp2_P_mature.fasta TargetFinder/targetfinder.pl transcripts.adj.fa>targetfinder_result
+# -t Number of TargetFinder threads/CPUs to use (DEFAULT = 1).
+# -r Search reverse strand for targets?. Use this option if the database is genomic DNA.
+# -c Prediction score cutoff value (DEFAULT = 4).
+
+##############################
+
+##############################
+
+
+#enrichment analysis of target genes
+#retrive GOs from GFF files, use blast2GO if genes have no GOs
+#(1)use agriGO for ananlysis input query and select Suggested backgrounds, Yekutieli(FDR under dependency) for multi-test correction
+#(2)use BingGO for analysis
+#construct annotation file using gff GOs
+# eg:
+ 	(species=Arachis hypogaea)(type=Biological Process)(curator=GO)
+	arahy.GHMM2H = 4721
+	arahy.GHMM2H = 5515
+	arahy.GHMM2H = 5634
+	arahy.4ER605 = 3676
+	arahy.4ER605 = 3677
+	arahy.S4TQX4 = 8152
+
+#KEGG analysis with KOBAS
+
+
+
