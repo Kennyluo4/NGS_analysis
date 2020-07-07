@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1bSPA9yIezQNT1ekPqj65AYfE5x" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="my_analysis" sdk-home="/usr/local/bin/python3.7">
+        <option name="mySdkHome" value="/usr/local/bin/python3.7" />
+        <option name="myModuleName" value="my_analysis" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.converSRAID">
+    <configuration name="SumOrthorfinder" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SumOrthorfinder.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="appendAnnotation2DEG" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Documents/1.research/Nodulation seq project/long RNA/annotation" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Documents/1.research/Nodulation seq project/long RNA/annotation/appendAnnotation2DEG.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="class_transform" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/class_transform.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="converSRAID" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/converSRAID.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.converSRAID" />
+        <item itemvalue="Python.converSRAID" />
+        <item itemvalue="Python.appendAnnotation2DEG" />
+        <item itemvalue="Python.SumOrthorfinder" />
+        <item itemvalue="Python.class_transform" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="create" />
+      <created>1588623339245</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1588623339245</updated>
+    </task>
+    <task id="LOCAL-00001" summary="create file">
+      <created>1588878567836</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1588878567837</updated>
+    </task>
+    <task id="LOCAL-00002" summary="create">
+      <created>1588879558921</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1588879558921</updated>
+    </task>
+    <task id="LOCAL-00003" summary="create file">
+      <created>1589338937783</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1589338937783</updated>
+    </task>
+    <task id="LOCAL-00004" summary="change input and description">
+      <created>1589339054758</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1589339054758</updated>
+    </task>
+    <task id="LOCAL-00005" summary="modify the output file name, correspond to input file name">
+      <created>1589384670293</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1589384670293</updated>
+    </task>
+    <task id="LOCAL-00006" summary="create file">
+      <created>1594043353066</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1594043353067</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="create" />
+    <MESSAGE value="change input and description" />
+    <MESSAGE value="modify the output file name, correspond to input file name" />
+    <MESSAGE value="create file" />
+    <option name="LAST_COMMIT_MESSAGE" value="create file" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="318" y="37" width="1113" height="850" key="CommitChangelistDialog2" timestamp="1594043352853">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state x="317" y="37" width="1113" height="850" key="CommitChangelistDialog2/41.23.1399.877@41.23.1399.877" timestamp="1589384670015" />
+    <state x="318" y="37" key="CommitChangelistDialog2/42.23.1398.877@42.23.1398.877" timestamp="1594043352853" />
+    <state x="141" y="123" width="1199" height="677" key="DiffContextDialog" timestamp="1588622605289">
+      <screen x="41" y="23" width="1399" height="877" />
+    </state>
+    <state x="141" y="123" width="1199" height="677" key="DiffContextDialog/41.23.1399.877@41.23.1399.877" timestamp="1588622605289" />
+    <state width="1377" height="233" key="GridCell.Tab.0.bottom" timestamp="1594043403527">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="231" key="GridCell.Tab.0.bottom/41.23.1399.877@41.23.1399.877" timestamp="1588892116506" />
+    <state width="1377" height="233" key="GridCell.Tab.0.bottom/42.23.1398.877@42.23.1398.877" timestamp="1594043403527" />
+    <state width="1377" height="233" key="GridCell.Tab.0.center" timestamp="1594043403527">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="231" key="GridCell.Tab.0.center/41.23.1399.877@41.23.1399.877" timestamp="1588892116505" />
+    <state width="1377" height="233" key="GridCell.Tab.0.center/42.23.1398.877@42.23.1398.877" timestamp="1594043403527" />
+    <state width="1377" height="233" key="GridCell.Tab.0.left" timestamp="1594043403526">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="231" key="GridCell.Tab.0.left/41.23.1399.877@41.23.1399.877" timestamp="1588892116505" />
+    <state width="1377" height="233" key="GridCell.Tab.0.left/42.23.1398.877@42.23.1398.877" timestamp="1594043403526" />
+    <state width="1377" height="233" key="GridCell.Tab.0.right" timestamp="1594043403527">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="231" key="GridCell.Tab.0.right/41.23.1399.877@41.23.1399.877" timestamp="1588892116505" />
+    <state width="1377" height="233" key="GridCell.Tab.0.right/42.23.1398.877@42.23.1398.877" timestamp="1594043403527" />
+    <state width="1377" height="233" key="GridCell.Tab.1.bottom" timestamp="1594043403528">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="233" key="GridCell.Tab.1.bottom/41.23.1399.877@41.23.1399.877" timestamp="1588892116441" />
+    <state width="1377" height="233" key="GridCell.Tab.1.bottom/42.23.1398.877@42.23.1398.877" timestamp="1594043403528" />
+    <state width="1377" height="233" key="GridCell.Tab.1.center" timestamp="1594043403528">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="233" key="GridCell.Tab.1.center/41.23.1399.877@41.23.1399.877" timestamp="1588892116440" />
+    <state width="1377" height="233" key="GridCell.Tab.1.center/42.23.1398.877@42.23.1398.877" timestamp="1594043403528" />
+    <state width="1377" height="233" key="GridCell.Tab.1.left" timestamp="1594043403528">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="233" key="GridCell.Tab.1.left/41.23.1399.877@41.23.1399.877" timestamp="1588892116440" />
+    <state width="1377" height="233" key="GridCell.Tab.1.left/42.23.1398.877@42.23.1398.877" timestamp="1594043403528" />
+    <state width="1377" height="233" key="GridCell.Tab.1.right" timestamp="1594043403528">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state width="1378" height="233" key="GridCell.Tab.1.right/41.23.1399.877@41.23.1399.877" timestamp="1588892116440" />
+    <state width="1377" height="233" key="GridCell.Tab.1.right/42.23.1398.877@42.23.1398.877" timestamp="1594043403528" />
+    <state x="243" y="100" key="SettingsEditor" timestamp="1594043132136">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state x="242" y="100" key="SettingsEditor/41.23.1399.877@41.23.1399.877" timestamp="1589384471164" />
+    <state x="243" y="100" key="SettingsEditor/42.23.1398.877@42.23.1398.877" timestamp="1594043132136" />
+    <state x="341" y="201" key="Vcs.Push.Dialog.v2" timestamp="1594043373145">
+      <screen x="42" y="23" width="1398" height="877" />
+    </state>
+    <state x="340" y="201" key="Vcs.Push.Dialog.v2/41.23.1399.877@41.23.1399.877" timestamp="1589384676460" />
+    <state x="341" y="201" key="Vcs.Push.Dialog.v2/42.23.1398.877@42.23.1398.877" timestamp="1594043373145" />
+    <state width="700" height="438" key="XDebugger.FullValuePopup" timestamp="1588879710425">
+      <screen x="41" y="23" width="1399" height="877" />
+    </state>
+    <state width="700" height="438" key="XDebugger.FullValuePopup/41.23.1399.877@41.23.1399.877" timestamp="1588879710425" />
+    <state x="424" y="257" key="git4idea.merge.GitPullDialog" timestamp="1588880023110">
+      <screen x="41" y="23" width="1399" height="877" />
+    </state>
+    <state x="424" y="257" key="git4idea.merge.GitPullDialog/41.23.1399.877@41.23.1399.877" timestamp="1588880023110" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/class_transform.py</url>
+          <line>16</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/class_transform.py</url>
+          <line>9</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SumOrthorfinder.py</url>
+          <line>11</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SumOrthorfinder.py</url>
+          <line>30</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/converSRAID.py</url>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

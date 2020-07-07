@@ -36,7 +36,7 @@ for lines in open(file):
     if ".fq" in lines or ".fastq" in lines:
         row = [sampleID, total_read, paired_read, pair_once, unpaired_read, unpair_once, overall_rate]
         res.append(row)
-        sampleID = [i for i in lines.strip().split(" ")][-1].split('_')[0]
+        sampleID = [i for i in lines.strip().split(" ")][-1].split('.')[0]
         total_read = ""
         pair_once = ""
         unpair_once = ""
