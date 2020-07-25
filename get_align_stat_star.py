@@ -11,7 +11,6 @@ def readFiles():
 def readStats(f):
     print('reading file ... %s' % f)
     sampleID = f.replace('Log.final.out','')
-    row = [sampleID]
     total = 0
     uniq = 0
     multi = 0
