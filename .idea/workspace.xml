@@ -20,7 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PI262090_water_3_cleanLog.final.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_align_stat_star.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_align_stat_star.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +57,7 @@
       </console-settings>
     </option>
   </component>
-  <component name="RunManager" selected="Python.converSRAID">
+  <component name="RunManager" selected="Python.get_align_stat_star">
     <configuration name="SumOrthorfinder" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="my_analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -141,13 +142,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="get_align_stat_star" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/get_align_stat_star.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.get_align_stat_star" />
         <item itemvalue="Python.converSRAID" />
         <item itemvalue="Python.converSRAID" />
         <item itemvalue="Python.appendAnnotation2DEG" />
         <item itemvalue="Python.SumOrthorfinder" />
-        <item itemvalue="Python.class_transform" />
       </list>
     </recent_temporary>
   </component>
