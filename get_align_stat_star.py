@@ -36,3 +36,6 @@ def main():
         data.append(alignment)
     df = pd.DataFrame(data, columns = ['Sample ID', 'UniqueAlign', 'Multi-Align', 'TooManyAlign', 'Unmapped'])
     df.to_excel('STAR_alignment_statistics.xls')
+
+if __name__ == "__main__":
+    main()
