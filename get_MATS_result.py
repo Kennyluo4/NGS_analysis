@@ -78,7 +78,7 @@ def main():
     res2.insert(0, 'AS_type', ID2)
 
     #write to excel file
-    if cpath = '.':
+    if cpath == '.':
         today = str(date.today())
         filename = ''.join(['rMATS_summary_',today,'.xlsx'])
     else:
