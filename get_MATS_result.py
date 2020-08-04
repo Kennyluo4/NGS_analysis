@@ -1,20 +1,15 @@
-import glob
+import glob, os, sys
 import pandas as pd
 import numpy as np
+from datetime import date
 
 def help():
-    print("usage: python get_MATS_result.py"
-          "put *JC.txt and *JCEC.txt in the same directory with the script"
+    print("usage: python get_MATS_result.py <rmats_result_folder>"
+          "default is current directory"
           "summary and integrate all the significant alternative splicing event (default Pvalue = 0.05) from MATS."
           "output result in MATS_JCEC_result.txt and MATS_JC_result.txt")
 
-
-
-file_list1 = glob.glob("*JC.txt") #evaluates splicing with only reads that span splicing junctions
-file_list2 = glob.glob("*JCEC.txt") #evaluates splicing with reads that span splicing junctions and reads on target
-
 def result_filter(file, p_thredshold=0.05):
-    print("The pvalue for selection is\t%s" % p_thredshold)
     # res = []
     num = 0  #number of significant alternative splicing event
     # genes = []
@@ -48,8 +43,19 @@ def result_filter(file, p_thredshold=0.05):
     return sig_df
 
 def main():
+    argvs = sys.argv
+    try:
+        cpath = argvs[1]
+        print('Input result folder is %s' % cpath)
+    except IndexError:
+        help()
+        exit()
+    os.chdir(cpath)
+    file_list1 = glob.glob('*MATS.JC.txt')
+    file_list2 = glob.glob('*MATS.JCEC.txt')
     final_res1 = []
     final_res2 = []
+    print("The pvalue for selection is\t%s" % p_thredshold)
     for fs in file_list1:       #read JC.txt result files
         print("Processing\t%s" % fs)
         res_f = result_filter(fs)
@@ -72,7 +78,12 @@ def main():
     res2.insert(0, 'AS_type', ID2)
 
     #write to excel file
-    writer = pd.ExcelWriter('rMATS_summary.xlsx',engine='xlsxwriter')
+    if cpath = '.':
+        today = str(date.today())
+        filename = ''.join(['rMATS_summary_',today,'.xlsx'])
+    else:
+        filename = ''.join([cpath, 'rMATS_summary_',today,'.xlsx'])
+    writer = pd.ExcelWriter(filename,engine='xlsxwriter')
     res1.to_excel(writer, sheet_name='JC', index=False)
     res2.to_excel(writer, sheet_name='JCEC', index=False)
     writer.save()
