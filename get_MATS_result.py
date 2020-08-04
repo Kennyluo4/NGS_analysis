@@ -55,7 +55,6 @@ def main():
     file_list2 = glob.glob('*MATS.JCEC.txt')
     final_res1 = []
     final_res2 = []
-    print("The pvalue for selection is\t%s" % p_thredshold)
     for fs in file_list1:       #read JC.txt result files
         print("Processing\t%s" % fs)
         res_f = result_filter(fs)
