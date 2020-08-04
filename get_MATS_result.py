@@ -4,9 +4,9 @@ import numpy as np
 from datetime import date
 
 def help():
-    print("usage: python get_MATS_result.py <rmats_result_folder>"
-          "default is current directory"
-          "summary and integrate all the significant alternative splicing event (default Pvalue = 0.05) from MATS."
+    print("usage: python get_MATS_result.py <rmats_result_folder>\n"
+          "default is current directory\n"
+          "summary and integrate all the significant alternative splicing event (default Pvalue = 0.05) from MATS.\n"
           "output result in MATS_JCEC_result.txt and MATS_JC_result.txt")
 
 def result_filter(file, p_thredshold=0.05):
