@@ -1,5 +1,6 @@
 import glob
 import pandas as pd
+import numpy as np
 
 def help():
     print("usage: python get_MATS_result.py"
@@ -68,8 +69,8 @@ def main():
     res2 = res2.replace(r'^\s*$', np.nan, regex=True)
     #write to excel file
     writer = pd.ExcelWriter('rMATS_summary.xlsx',engine='xlsxwriter')
-    res1.to_excel(writer, sheet_name='JC')
-    res2.to_excel(writer, sheet_name='JCEC')
+    res1.to_excel(writer, sheet_name='JC', index=False)
+    res2.to_excel(writer, sheet_name='JCEC', index=False)
     writer.save()
     # with open("MATS_JCEC_result.txt", "w") as handle:
     #     handle.writelines(final_res2)
