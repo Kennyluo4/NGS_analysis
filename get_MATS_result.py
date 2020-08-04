@@ -45,7 +45,7 @@ def result_filter(file, p_thredshold=0.05):
 def main():
     argvs = sys.argv
     try:
-        cpath = argvs[1]
+        cpath = argvs[1].replace('/', '')
         print('Input result folder is %s' % cpath)
     except IndexError:
         help()
@@ -77,8 +77,8 @@ def main():
     res2.insert(0, 'AS_type', ID2)
 
     #write to excel file
+    today = str(date.today())
     if cpath == '.':
-        today = str(date.today())
         filename = ''.join(['rMATS_summary_',today,'.xlsx'])
     else:
         filename = ''.join([cpath, 'rMATS_summary_',today,'.xlsx'])
