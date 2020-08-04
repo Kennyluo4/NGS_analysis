@@ -22,7 +22,7 @@ def result_filter(file, p_thredshold=0.05):
     # line_num = 1
     df = pd.read_table(file)
     sig_df = df[df['FDR']<=0.05]
-    sig_df['AS type'] = AS_type
+    sig_df['AS_type'] = AS_type
     # for lines in open(file):
     #     itms = lines.strip().split("\t")
     #     if line_num == 1:
@@ -64,9 +64,13 @@ def main():
         res_f2 = result_filter(fs2)
         final_res2.append(res_f2) 
     res2 = pd.concat(final_res2)
-    #replace empty cells 
-    res1 = res1.replace(r'^\s*$', np.nan, regex=True)
-    res2 = res2.replace(r'^\s*$', np.nan, regex=True)
+
+    #move AS type to first column
+    ID1 = res1.pop('AS_type')
+    res1.insert(0, 'AS_type', ID1)
+    ID2 = res2.pop('AS_type')
+    res2.insert(0, 'AS_type', ID2)
+
     #write to excel file
     writer = pd.ExcelWriter('rMATS_summary.xlsx',engine='xlsxwriter')
     res1.to_excel(writer, sheet_name='JC', index=False)
