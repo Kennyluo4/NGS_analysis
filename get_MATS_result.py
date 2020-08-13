@@ -11,7 +11,7 @@ def help():
 
 def result_filter(file, p_thredshold=0.05):
     # res = []
-    num = 0  #number of significant alternative splicing event
+    # num = 0  #number of significant alternative splicing event
     # genes = []
     AS_type = file.split('.')[0]     #read the alternative splicing type from the file title
     # line_num = 1
