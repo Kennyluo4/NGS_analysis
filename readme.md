@@ -1,7 +1,8 @@
 
-# Scripts collection for analysis
+# Scripts for NGS analysis
+## For Transcriptome sequencing and Whole Genome Bisulfite Sequencing analysis
 
-* This is the list of all the analysis scripts used for sequencing projects (RNAseq (longRNA and smallRNA) and WGBS). But this list is not always uptodate, check the scripts directly for more information.
+* This is the list of all the scripts used for sequencing projects. 
 
     
 
