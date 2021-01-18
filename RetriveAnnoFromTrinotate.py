@@ -2,12 +2,18 @@
 import pandas as pd
 import numpy as np
 import csv
-
-df = pd.read_excel("trinotate_test.xlsx")
+import sys
+argvs = sys.argv
+try:
+    file = argvs[1]
+except:
+    print("Use: python RetriveAnnoFromTrinotate.py <TrinotateFile>"
+          )
+df = pd.read_excel(file)
 # df.head()
 term2gene = []
 term2trans = []
-term2name = []
+# term2name = []
 kegg2gene = []
 kegg2trans = []
 for index, row in df.iterrows():
@@ -65,18 +71,18 @@ for index, row in df.iterrows():
 # term2gene = set(map(tuple,term2gene))
 # kegg2gene = set(map(tuple,kegg2gene))
 
-with open("term2gene.csv", "w") as file:
+with open("go2gene.csv", "w") as file:
     writer = csv.writer(file)
     for list in term2gene:
         writer.writerow(list)
-with open("term2transcript.csv", "w") as file:
+with open("go2transcript.csv", "w") as file:
     writer = csv.writer(file)
     for list in term2trans:
         writer.writerow(list)
-with open("term2name.csv", "w") as file:
-    writer = csv.writer(file)
-    for list in term2name:
-        writer.writerow(list)
+# with open("term2name.csv", "w") as file:
+#     writer = csv.writer(file)
+#     for list in term2name:
+#         writer.writerow(list)
 with open("kegg2gene.csv", "w") as file:
     writer = csv.writer(file)
     for list in kegg2gene:
