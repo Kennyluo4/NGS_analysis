@@ -21,6 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/matchExcelbyCol.py" beforeDir="false" afterPath="$PROJECT_DIR$/matchExcelbyCol.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,12 +31,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1bSPA9yIezQNT1ekPqj65AYfE5x" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -190,6 +200,8 @@
       <option name="presentableId" value="Default" />
       <updated>1588623339245</updated>
       <workItem from="1609438616597" duration="683000" />
+      <workItem from="1611002678550" duration="94000" />
+      <workItem from="1613252967453" duration="4903000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -247,7 +259,21 @@
       <option name="project" value="LOCAL" />
       <updated>1609438688205</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="add input file requirement;&#10;remove useless actions">
+      <created>1611002755309</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1611002755309</updated>
+    </task>
+    <task id="LOCAL-00010" summary="created file">
+      <created>1613259997193</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1613259997193</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,7 +296,9 @@
     <MESSAGE value="change input and description" />
     <MESSAGE value="modify the output file name, correspond to input file name" />
     <MESSAGE value="create file" />
-    <option name="LAST_COMMIT_MESSAGE" value="create file" />
+    <MESSAGE value="add input file requirement;&#10;remove useless actions" />
+    <MESSAGE value="created file" />
+    <option name="LAST_COMMIT_MESSAGE" value="created file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

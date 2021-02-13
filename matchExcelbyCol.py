@@ -19,7 +19,8 @@ else:
 colID = str(colID)
 # print(df1)
 # print(df2)
-res = df1.merge(df2, on=colID)
+res = df2.merge(df1, on=colID, how='left')
+# how: left - use key on the df2, keep the key even there is no match
 targetfile = ToF2.split('/')[-1]
 sourcefile = FromF1.split('/')[-1]
 resname = targetfile + '_' + sourcefile + 'merged.xlsx'
