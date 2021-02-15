@@ -201,7 +201,8 @@
       <updated>1588623339245</updated>
       <workItem from="1609438616597" duration="683000" />
       <workItem from="1611002678550" duration="94000" />
-      <workItem from="1613252967453" duration="4903000" />
+      <workItem from="1613252967453" duration="5577000" />
+      <workItem from="1613410385095" duration="559000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -273,7 +274,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613259997193</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="merge method change to &quot;left&quot;">
+      <created>1613260351446</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1613260351446</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -298,7 +306,8 @@
     <MESSAGE value="create file" />
     <MESSAGE value="add input file requirement;&#10;remove useless actions" />
     <MESSAGE value="created file" />
-    <option name="LAST_COMMIT_MESSAGE" value="created file" />
+    <MESSAGE value="merge method change to &quot;left&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge method change to &quot;left&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
