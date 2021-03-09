@@ -21,7 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/matchExcelbyCol.py" beforeDir="false" afterPath="$PROJECT_DIR$/matchExcelbyCol.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RetriveAnnoFromTrinotate.py" beforeDir="false" afterPath="$PROJECT_DIR$/RetriveAnnoFromTrinotate.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,7 +202,8 @@
       <workItem from="1609438616597" duration="683000" />
       <workItem from="1611002678550" duration="94000" />
       <workItem from="1613252967453" duration="5577000" />
-      <workItem from="1613410385095" duration="559000" />
+      <workItem from="1613410385095" duration="626000" />
+      <workItem from="1615261815689" duration="2016000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -281,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613260351446</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="change file processing order. remove file extension for the output name.">
+      <created>1613426105229</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1613426105229</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -307,7 +315,8 @@
     <MESSAGE value="add input file requirement;&#10;remove useless actions" />
     <MESSAGE value="created file" />
     <MESSAGE value="merge method change to &quot;left&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge method change to &quot;left&quot;" />
+    <MESSAGE value="change file processing order. remove file extension for the output name." />
+    <option name="LAST_COMMIT_MESSAGE" value="change file processing order. remove file extension for the output name." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

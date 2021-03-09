@@ -16,11 +16,14 @@ term2trans = []
 # term2name = []
 kegg2gene = []
 kegg2trans = []
+geneGO = []
+geneKO = []
 for index, row in df.iterrows():
     #loop through each row based on their colnames
     GOs = ""
     geneID, transcriptID, blastxGO, blastpGO, pfamGO, KEGGID = row["#gene_id"], row["transcript_id"], row["gene_ontology_BLASTX"], row["gene_ontology_BLASTP"], row["gene_ontology_Pfam"], row["Kegg"]
     #if there is GOID acquired from 1 database, add to the GOs for this gene.
+    #record the GeneID to avoid redundancy
     if blastxGO != ".":
         GOs += blastxGO
     if blastpGO != ".":
@@ -32,44 +35,41 @@ for index, row in df.iterrows():
         #remove redundant GOs
         uniqAllGOs = set(allGOs)
         for GOterm in uniqAllGOs:
-            term2gene.append([GOterm, geneID])
+            # term2gene.append([GOterm, geneID])
             term2trans.append([GOterm, transcriptID])
+            generecord = geneID + GOterm
+            if generecord not in geneGO:
+                term2gene.append([GOterm, geneID])
+                geneGO.append(generecord)
+            else:
+                continue
 
     # get the KEGG ID and corresponding gene
     if KEGGID != ".":
         for KEGGcol in KEGGID.split("`"):
             if "KO:" in KEGGcol:
                 KEGGID = KEGGcol.split("KO:")[-1]
-                kegg2gene.append([KEGGID, geneID])
+                # kegg2gene.append([KEGGID, geneID])
+                generecord2 = geneID + KEGGID
                 kegg2trans.append([KEGGID, transcriptID])
-
-    # This part of older version required preprocessing of the trinotate file, add KAAS result and genome annotated GOIDs
-    # geneID, transcriptID, blastGO, pfamGO, KEGGID = row["#gene_id"], row["transcript_id"], row["gene_ontology_blast"], row["gene_ontology_pfam"], row["Kegg"]
-    # #get the GO ID and corresponding gene
-    # if blastGO != ".":
-    #     for GOcol in blastGO.split("`"):
-    #         GOterm, GOname = GOcol.split("^")[0], GOcol.split("^")[2]
-    #         term2gene.append([GOterm, geneID])
-    #         term2trans.append([GOterm, transcriptID])
-    #         term2name.append([GOterm, GOname])
-    # elif pfamGO !=".":
-    #     for GOcol in pfamGO.split("`"):
-    #         GOterm, GOname = GOcol.split("^")[0], GOcol.split("^")[2]
-    #         term2gene.append([GOterm, geneID])
-    #         term2trans.append([GOterm, transcriptID])
-    #         term2name.append([GOterm, GOname])
-    # else:
-    #     continue
-    # # get the KEGG ID and corresponding gene
+                if generecord2 not in geneKO:
+                    kegg2gene.append([KEGGID, geneID])
+                    geneKO.append(generecord2)
+                else:
+                    continue
+# if KAAS mapped KO id is used, use following code instead to get KO
     # if KEGGID != ".":
     #     for KEGGcol in KEGGID.split("`"):
     #         if "KO:" in KEGGcol:
-    #             KEGGID = KEGGcol.split("KO:")[-1]
-    #             kegg2gene.append([KEGGID, geneID])
-    #             kegg2trans.append([KEGGID, transcriptID])
-# # remove redundant gene-GO rows
-# term2gene = set(map(tuple,term2gene))
-# kegg2gene = set(map(tuple,kegg2gene))
+    #             KID = KEGGcol.split("KO:")[-1]
+    #             KOs.append(KID)
+    # if KAAS != ".":
+    #     KOs.append(KAAS)
+    # if len(KOs) != 0:
+    #     uniqKO = set(KOs)
+    #     for KOterm in uniqKO:
+    #         kegg2gene.append([KOterm, geneID])
+    #         kegg2trans.append([KOterm, transcriptID])
 
 with open("go2gene.csv", "w") as file:
     writer = csv.writer(file)
