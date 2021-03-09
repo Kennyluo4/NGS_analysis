@@ -36,10 +36,10 @@ for index, row in df.iterrows():
         uniqAllGOs = set(allGOs)
         for GOterm in uniqAllGOs:
             # term2gene.append([GOterm, geneID])
-            term2trans.append([GOterm, transcriptID])
+            go2trans.append([GOterm, transcriptID])
             generecord = geneID + GOterm
             if generecord not in geneGO:
-                term2gene.append([GOterm, geneID])
+                go2gene.append([GOterm, geneID])
                 geneGO.append(generecord)
             else:
                 continue
@@ -73,11 +73,11 @@ for index, row in df.iterrows():
 
 with open("go2gene.csv", "w") as file:
     writer = csv.writer(file)
-    for list in term2gene:
+    for list in go2gene:
         writer.writerow(list)
 with open("go2transcript.csv", "w") as file:
     writer = csv.writer(file)
-    for list in term2trans:
+    for list in go2trans:
         writer.writerow(list)
 # with open("term2name.csv", "w") as file:
 #     writer = csv.writer(file)

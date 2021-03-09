@@ -19,10 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RetriveAnnoFromTrinotate.py" beforeDir="false" afterPath="$PROJECT_DIR$/RetriveAnnoFromTrinotate.py" afterDir="false" />
-    </list>
+    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -203,7 +200,7 @@
       <workItem from="1611002678550" duration="94000" />
       <workItem from="1613252967453" duration="5577000" />
       <workItem from="1613410385095" duration="626000" />
-      <workItem from="1615261815689" duration="2016000" />
+      <workItem from="1615261815689" duration="2083000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -289,7 +286,21 @@
       <option name="project" value="LOCAL" />
       <updated>1613426105229</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="remove redundant gene + KO/GO rows">
+      <created>1615264975397</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1615264975397</updated>
+    </task>
+    <task id="LOCAL-00014" summary="remove redundant gene + KO/GO rows">
+      <created>1615264982439</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1615264982439</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -316,7 +327,8 @@
     <MESSAGE value="created file" />
     <MESSAGE value="merge method change to &quot;left&quot;" />
     <MESSAGE value="change file processing order. remove file extension for the output name." />
-    <option name="LAST_COMMIT_MESSAGE" value="change file processing order. remove file extension for the output name." />
+    <MESSAGE value="remove redundant gene + KO/GO rows" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove redundant gene + KO/GO rows" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
