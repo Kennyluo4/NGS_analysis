@@ -11,8 +11,8 @@ except:
           )
 df = pd.read_excel(file)
 # df.head()
-term2gene = []
-term2trans = []
+go2gene = []
+go2trans = []
 # term2name = []
 kegg2gene = []
 kegg2trans = []
@@ -30,7 +30,7 @@ for index, row in df.iterrows():
         GOs += "`" + blastpGO
     if pfamGO != ".":
         GOs += "`" + blastpGO
-    if GOs != "":
+    if "GO" in GOs:
         allGOs = [GOcol.split("^")[0] for GOcol in GOs.split("`")]
         #remove redundant GOs
         uniqAllGOs = set(allGOs)
