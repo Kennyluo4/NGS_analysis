@@ -3,37 +3,24 @@
     Usage: python3 LinkDMR2Gene.py DMR_file GTFfile'''
 import pandas as pd
 import sys
+import HTSeq
 
 def read_gtf(gtff):
-    #take the transcript coordinate first. merge transcript with same genes.
+    '''read each transcript record the gene and gene postion {geneID:[chr,start,end]}'''
     chrDic = {}
-    # gDic = {}
-    for lines in open(gtff):
-        if lines.startswith('#'):
-            continue
-        elif 'Gnomon\ttranscript' in lines: #take only transcript information
-            col = lines.strip().split('\t')
-            chr, start, end, note = col[0], int(col[3]), int(col[4]), col[8]
-            subcol = note.split("; ")
-            geneID = subcol[1].replace('"', '').replace('gene_id ', '')
-            if chr not in chrDic.keys():
-                chrDic[chr] = {}
-                if geneID not in chrDic[chr].keys():
-                    chrDic[chr][geneID] = [start, end]
-                else:# if the gene is recorded, but the new transcript start or end is outside of that gene(start < g_start, end >g_end), extend the gene range.
-                    if start < chrDic[chr][geneID][0]:
-                        chrDic[chr][geneID][0] = start
-                    if end > chrDic[chr][geneID][1]:
-                        chrDic[chr][geneID][1] = end
-            else:
-                if geneID not in chrDic[chr].keys():
-                    chrDic[chr][geneID] = [start, end]
-                else:
-                    if start < chrDic[chr][geneID][0]:
-                        chrDic[chr][geneID][0] = start
-                    if end > chrDic[chr][geneID][1]:
-                        chrDic[chr][geneID][1] = end
-    return chrDic
+    gDic = {}
+    gff_file = HTSeq.GFF_Reader(gtff, end_included=True)
+    for feature in gff_file:
+        if feature.type == "transcript":
+        # print(feature)
+            # print(feature.attr)
+            gene_id = feature.attr['gene_id']
+            chr = feature.iv.chrom
+            start = feature.iv.start
+            end = feature.iv.end
+            if gene_id not in gDic:
+                gDic[gene_id] = [chr, start, end]
+    return gDic
 
 def overlap(s1, e1, s2, e2):
     '''determine the position of obj1 corresponding to obj2'''
@@ -62,26 +49,28 @@ def main():
     # gtff = 'test.gtf'
     # dmrf = 'dmr_CG_2hpi.csv'
     outfile = dmrf.replace('.csv', '_with_genes.csv')
-    df = pd.read_csv(dmrf)
-    g_coord = read_gtf(gtff)
+    df = pd.read_csv(dmrf)         #DMR pandas.DataFrame
+    g_coord = read_gtf(gtff)     #{geneID:[chr,start,end]}
 
+    #compare the position for each DMR
     for index, row in df.iterrows():
         DMRchr, DMRstart, DMRend = row['chr'], int(row['start']), int(row['end'])
-        try:  # in case
-            genes = g_coord[DMRchr]
-        except KeyError:
-            # print('warning: %s doesn\'t have gene in the gtf file ' % DMRchr)
-            continue
-        nearbygenesList = []
-        for geneID, coordinates in genes.items():
-            Gstart, Gend = coordinates[0], coordinates[1]
-            gene_position = overlap(Gstart, Gend, DMRstart, DMRend)
-            if gene_position in ['overlap','upstream 2k','downstream 2k']:
-                nearbygenesList.append(geneID + ': ' + str(Gstart) + '-' + str(Gend) + ' (' + gene_position + ')')
+        # nearbygenesList = []
+        for geneID, coordinates in g_coord.items():
+            Gchr, Gstart, Gend = coordinates[0], coordinates[1], coordinates[2]
+            if Gchr == DMRchr:
+                gene_position = overlap(Gstart, Gend, DMRstart, DMRend)
+                if gene_position in ['overlap','upstream 2k','downstream 2k']:
+                    df.loc[index, 'nearby_gene'] = geneID
+                    df.loc[index, 'gene_location2DMR'] = gene_position
+                    df.loc[index, 'geneInteval'] = str(Gstart) + '-' + str(Gend)
+                else:
+                    df.loc[index, 'nearby_gene'] = "NA"
+                    df.loc[index, 'gene_location2DMR'] = "NA"
+                    df.loc[index, 'geneInteval'] = "NA"
+                    continue
             else:
                 continue
-        nearbygenes = ';'.join(nearbygenesList)
-        df.loc[index, 'nearby_gene'] = nearbygenes
     df.to_csv(outfile)
     print('output file: %s' % outfile)
 
