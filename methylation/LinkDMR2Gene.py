@@ -1,12 +1,14 @@
 '''link DSS DMR result.csv with nearby/overlapped gene in a gtf file
     upstream and downstream 2k
-    Usage: python3 LinkDMR2Gene.py DMR_file GTFfile'''
+    Usage: python3 LinkDMR2Gene.py DMR_file GTFfile
+    the position of DMR is given, eg. DMR at upstream of a gene
+    Make sure GTF file is sorted by chromosome'''
 import pandas as pd
 import sys
 import HTSeq
 
 def read_gtf(gtff):
-    '''read each transcript record the gene and gene postion {geneID:[chr,start,end]}'''
+    '''read each transcript record  the gene and gene postion by chromosome {chr:{gene:start,end}}'''
     chrDic = {}
     gDic = {}
     gff_file = HTSeq.GFF_Reader(gtff, end_included=True)

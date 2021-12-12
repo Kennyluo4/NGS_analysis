@@ -38,7 +38,7 @@ def result_filter(file, p_thredshold=0.05):
     # genes = set(genes)
     # num_gene_AS = len(genes)
     num_AS = sig_df.shape[0]
-    num_gene = len(sig_df.GeneID.nunique())
+    num_gene = len(sig_df.GeneID.value_counts())
     print("There are %d significantly %s splicing events in %d genes\n" % (num_AS, AS_type, num_gene))
     return sig_df
 
