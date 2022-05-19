@@ -22,4 +22,4 @@ for lines in open(seqfile):
         continue
     else:
         seq = lines.strip()
-    os.system("perl %s -s %s -d transcripts.adj.fa -p table -q %s -t 4" % (targetfinder, seq, mirnaID))
+    os.system("perl %s -s %s -d %s -p table -q %s -t 4" % (targetfinder, seq, transcriptfile, mirnaID))
