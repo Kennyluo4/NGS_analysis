@@ -19,7 +19,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="" />
+    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="edit input for transcriptome file">
+      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/my_analysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/my_analysis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/excute_target_finder.py" beforeDir="false" afterPath="$PROJECT_DIR$/excute_target_finder.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,6 +40,12 @@
       <filtered-out-file-type name="TAG" />
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
+  </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="2812ade8-f0e0-427b-9dd4-9c56eafd5aac" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="1bSPA9yIezQNT1ekPqj65AYfE5x" />
   <component name="ProjectViewState">
@@ -54,7 +65,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -81,6 +92,28 @@
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SumOrthorfinder.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="my_analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -201,6 +234,9 @@
       <workItem from="1613252967453" duration="5577000" />
       <workItem from="1613410385095" duration="626000" />
       <workItem from="1615261815689" duration="2083000" />
+      <workItem from="1639282059719" duration="719000" />
+      <workItem from="1647269298863" duration="651000" />
+      <workItem from="1652971426472" duration="834000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -300,7 +336,21 @@
       <option name="project" value="LOCAL" />
       <updated>1615264982439</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="update">
+      <created>1639282102344</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1639282102344</updated>
+    </task>
+    <task id="LOCAL-00016" summary="edit input for transcriptome file">
+      <created>1652971511123</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1652971511123</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -316,7 +366,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="create" />
@@ -328,7 +377,9 @@
     <MESSAGE value="merge method change to &quot;left&quot;" />
     <MESSAGE value="change file processing order. remove file extension for the output name." />
     <MESSAGE value="remove redundant gene + KO/GO rows" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove redundant gene + KO/GO rows" />
+    <MESSAGE value="update" />
+    <MESSAGE value="edit input for transcriptome file" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit input for transcriptome file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
