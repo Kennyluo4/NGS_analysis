@@ -1,10 +1,8 @@
 
-# Scripts for NGS analysis
-## For Transcriptome sequencing and Whole Genome Bisulfite Sequencing analysis
+# About
+This is a collection of scripts/functions for transcriptome sequencing and Whole Genome Bisulfite Sequencing (WGBS) analysis
 
-* This is the list of all the scripts used for sequencing projects. 
-
-    
+## List of scripts
 
 | script | function*|
 | ---| --- |
