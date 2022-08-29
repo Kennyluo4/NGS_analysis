@@ -422,7 +422,7 @@ The runtime. Lightweight algorithms are much faster!
 ####################################################
 #upload your data from local server to distant galaxy server
 module load ubuntu
-lftp -u luoziliang@ufl.edu,kv8565356 usegalaxy.org
+lftp -u luoziliang@ufl.edu,password usegalaxy.org
 #after connected to the galaxy server lftp luoziliang@ufl.edu@usegalaxy.org:~>
 #use put function to put target files to galaxy server
 put merged.bam
