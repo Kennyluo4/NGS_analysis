@@ -1,0 +1,458 @@
+
+#download data
+wget ftp://cegresources.icrisat.org/* -r --user=jwang --password=CXuqk8VtOy
+
+####
+\QC
+####
+module load fastqc multiqc
+fastqc *.fastq -o qc
+cd qc
+multiqc . 
+
+##############
+\combine reads
+##############
+#Check for the right number of unique sample IDs for both R1 and R2
+#sample ID should be "sample ID identifier" + "_" + "other info" + "fq.gz"
+#for forward reads
+ls -1 *R1*.gz | awk -F '_' '{print $1}' | sort | uniq | wc -l
+#for reverse reads
+ls -1 *R2*.gz | awk -F '_' '{print $1}' | sort | uniq | wc -l
+#get the sample list
+ls -1 *fastq.gz | awk -F '_' '{print $1}' | sort | uniq > samples_list.txt
+less samples_list
+#merge data generated from different lanes
+#check the command input first using echo
+# for i in `cat ./samples_list.txt`; do echo cat $i\_*_R1_001.fastq.gz \> $i\_1.fq.gz; done
+#this should cat all the forward reads files from one sample to sampleID_1.fq.gz
+# for i in `cat ./samples_list.txt`; do zcat $i_*_R1_001.fastq.gz > $i_1.fq.gz; done
+cat 6-H-3*R1_001.fastq.gz>6H3_1.fq.gz
+
+#roughly calculate the base pairs in one sample:
+zgrep -v "@" 6123_2.fq.gz| zgrep -v "+"|wc -m
+27484080876
+#27484080876/2/1Mb
+~13 Gb
+= ~5X coverage
+zgrep -v "@" 621_1.fq.gz| zgrep -v "+"|wc -m
+62658674820~31Gb
+= ~11X coverage
+
+#check the reads using fastq-screen
+#download prepared genomes
+#edit the configure file. 
+fastq_screen --bisulfite --get_genome
+#after download the genomes a configure file will be automatically created. add bismark and bowtie path to this new configure file :/apps/bismark/0.22.3/bin/bowtie2 /apps/bismark/0.22.3/bin/bismark
+fastq_screen --bisulfite --conf /blue/wang/luoziliang/nodulation/genome/FastQ_Screen_Genomes_Bisulfite/fastq_screen.conf fqs_test_dataset.fastq.gz
+
+
+
+#########
+\trimming
+#########
+#to test trimming
+zcat 6H3_1.fq.gz |head -n 4000000| gzip>tes1.fq.gz
+zcat 6H3_2.fq.gz |head -n 4000000| gzip>tes2.fq.gz
+#Correcting for Methylation Bias (m-bias)
+#Methylation bias (m-bias) is a technical artifact where the 5' and 3' ends of reads contain artificial methylation levels due to the library preparation method
+# module load trim_galore
+trim_galore --paired -q 30 --trim1 --fastqc --clip_R1 5 --clip_R2 5 --stringency 3 --three_prime_clip_R1 2 --three_prime_clip_R2 2 --output_dir trimmed_reads -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT 6H1_1.fq.gz 6H1_2.fq.gz
+
+trim_galore --paired -q 30 --trim1 --fastqc --clip_R1 5 --clip_R2 5 --stringency 3 --three_prime_clip_R1 2 --three_prime_clip_R2 2 --output_dir trimmed_reads -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT 6H1_1.fq.gz 6H1_2.fq.gz
+
+#parameter reference: https://github.com/ben-laufer/CpG_Me/blob/master/Paired-end/CpG_Me_PE_switch.sh
+#--2colour 20  --clip_r1 10 --clip_r2 20 --three_prime_clip_r1 10 --three_prime_clip_r2 10
+
+##########################
+\align reads to genome
+##########################
+#build converte genome
+cp tif_gnm.*.ht2 bismark/
+module load samtools hisat2 bismark perl
+bismark_genome_preparation --parallel 2 --genomic_composition --verbose /blue/wang/luoziliang/nodulation/genome/bismark/
+
+# ####testing bsseeker and bismark
+# zcat 6H1.clean_1.fq.gz | head -n 400000| gzip >test1.fq.gz
+# zcat 6H1.clean_2.fq.gz | head -n 400000| gzip >test2.fq.gz
+
+#####################
+####using bismark#####
+#####################
+# bismark --hisat2 -p 4 --genome /blue/wang/luoziliang/nodulation/genome/bismark/ --known-splicesite-infile /blue/wang/luoziliang/nodulation/genome/splice_sites.gtf -1 test1.fq.gz -2 test2.fq.gz
+bismark --hisat2 -p 6 --genome /blue/wang/luoziliang/nodulation/genome/bismark_ht/ -1 6H1_1_val_1.fq.gz -2 6H1_2_val_2.fq.gz -o alignment --prefix 6H1
+# This will produce two output files:
+# 	test_dataset_bismark_bt2.bam (contains all alignments plus methylation call strings)
+# 	test_dataset_bismark_SE_report.txt (contains alignment and methylation summary)
+#deduplicate the alignment
+
+#for extremely large file. split it into multiple files for alignment, then merge them 
+#split 400,000,000 reads in each file
+zcat 621_1_val_1.fq.gz | split -l 1600000000 --filter='gzip > $FILE.gz'
+zcat 621_2_val_2.fq.gz | split -l 1600000000 --filter='gzip > $FILE.gz'
+bismark --hisat2 -p 8 --genome /blue/wang/luoziliang/nodulation/genome/bismark_ht/ -1 621_1_aa.fq.gz -2 621_2_aa.fq.gz -o . 
+bismark --hisat2 -p 8 --genome /blue/wang/luoziliang/nodulation/genome/bismark_ht/ -1 621_1_ab.fq.gz -2 621_2_ab.fq.gz -o . 
+samtools merge -@ 20 621_1_val_1_bismark_hisat2_pe.bam `ls 621_1_a*.bam`
+
+#get the unmapped reads to use single end mapping
+module load samtools bamutil
+for f in *.bismark_hisat2_pe_sorted.bam ; do samtools view -@ 30 -f 4 -b $f > ${f%%.*}_umapped.bam ; echo finished $f ; done 
+for f in *_umapped.bam; do bam bam2FastQ --in $f --unpairedOut ${f%_*}.fq;done
+
+#####################################
+\extract the methylation information
+#####################################
+##using bismark extractor
+# bismark_methylation_extractor --parallel 10 --comprehensive --buffer_size 20G --CX --genome_folder /blue/wang/luoziliang/nodulation/genome/bismark_ht/ --gzip --cytosine_report --bedGraph test1_bismark_hisat2_pe.deduplicated.bam
+#default --no_overlap is on. Equals to -rmOverlap in cgmaptools
+# --CX: report three types of C methylation on genome. by default it uses --cytosine_report to report every cytocines methylation (in CpG) in the genome. (this generates very big file: *CX_report.txt.gz. without this option it generates *CpG_report.txt.gz)
+# --comprehensive: Specifying this option will merge all four possible strand-specific methylation info into context-dependent output files.
+# view the bedgraph to igv
+#output: (1) *.bedGraph: chr, start, end, methylation%, meth_c, unmeth_c
+#		 (2) *.cov: chr, start, end, methylation%, methy_count, unmethy_count              (by default: include only CpG unless use --CX)
+#		 (3) *CpG/CX_report.txt: chr, pos, strand, methy_count, unmethy_count, C_content, nucleotide_countent   (very large if use -CX. Because every cytosine on both the top and bottom strands will be considered irrespective of whether they were actually covered by any reads in the experiment or not)
+#		 (The genome-wide cytosine reports contain important information for merging the top and bottom strand of symmetric CpG sites, which is not present in Bismark coverage and bedGraph files)
+#		 (4) CpG/CHH/CHG_context_*.txt: seqID, methy_state(+/-), chr, start, methy_cal(Z,X,H)
+#generate a report
+# bismark2report
+
+
+##\using MethylDackel to extract the methylation================================================
+# By default, any alignment marked as being secondary (bit 256), having failed QC (bit 512), being a PCR/optical duplicate (bit 1024), or being supplemental (bit 2048) is ignored. 
+#sort the alignment file first
+module load samtools
+module load methyldackel
+for f in *bismark_hisat2_pe.bam; do echo working on $f; samtools sort -@ 30 $f -o ${f%.*}_sorted.bam; done
+
+#check the mbias
+MethylDackel mbias /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa test1_val_1_bismark_hisat2_pe.bam test
+for f in *bismark_hisat2_pe_sorted.bam; do echo $f start at $(date +"%T")>>extractor_log; MethylDackel mbias -@ 25 /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa $f ${f%%.*}; done
+
+\extract the methylation calls (bedgraph)
+#use default tp output bedgraph for DSS analysis, use --methylKit output for methylkit analysis, use --cytosine_report option for cov files (can be convered to cgmaptools)
+#extract bedgraph files for DSS and IGV viewer
+MethylDackel extract -@ 20 --keepDiscordant --keepSingleton --CHG --CHH --mergeContext /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa 6121.6121_1_val_1_bismark_hisat2_pe.deduplicated_sorted.bam
+for f in *bismark_hisat2_pe_sorted.bam; do echo $f start at $(date +"%T")>>extractor_log; MethylDackel extract -@ 20 --keepDiscordant --keepSingleton --CHG --CHH --minOppositeDepth 5 --maxVariantFrac 0.5 /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa $f; done
+
+\extract methylkit input files
+# MethylDackel extract -@ 16 --methylKit --keepDiscordant --keepSingleton --CHG --CHH /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa test1_val_1_bismark_hisat2_pe.deduplicated.sorted.bam
+for f in *pe.bismark_hisat2_pe_sorted.bam; do echo $f start at $(date +"%T")>>extractor_log; MethylDackel extract -@ 14 --methylKit --keepDiscordant --keepSingleton --CHG --CHH --minOppositeDepth 4 --maxVariantFrac 0.5 /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa $f; done
+
+\extract cytocine report For ViewBS ploting.
+# #produce the CX_report file as what bismark_extractor -CX did. 
+MethylDackel extract -@ 20 --cytosine_report --keepDiscordant --keepSingleton --CHG --CHH /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa test1_val_1_bismark_hisat2_pe.deduplicated.sorted.bam
+for f in *bismark_hisat2_pe_sorted.bam; do echo $f start at $(date +"%T")>>extractor_log; MethylDackel extract -@ 40 --keepDiscordant --keepSingleton --cytosine_report --CHG --CHH --minOppositeDepth 4 --maxVariantFrac 0.5 /blue/wang/luoziliang/nodulation/genome/bismark_ht/arahy.Tifrunner.gnm1.KYV3.genome_main.fa $f; done
+# output files: *CpG.bedGraph (*CHG.bedGraph and *CHH.bedGraph will be outputed if using --CHG --CHH)
+# bedGraph is similar to *.cov from Bismark: chr, start, end, methylation%, methy_count, unmethy_count  
+# --methylKit: output methylKit format. exclusive with --mergeContext, but still can mergeContext after you extract the per-Cytocine information
+# 		*CpG.methylKit: chrBase, chr, base, strand, coverage, freqC, freqT
+# --cytosine_report: output CX_report.txt format: chr, pos, strand, methy_count, unmethy_count, C_content, nucleotide_countent 
+# --mergeContext: merge per-Cytosine metrics from CpG and CHG contexts into per-CPG or per-CHG metrics.
+# --minOppositeDepth: the minimum depth required on the strand opposite of a C to look for A/T/C bases. This is useful to exclude C/T SNPs
+# -R, --requireFlags   Require each alignment to have all bits in this value
+#                  present, or else the alignment is ignored. This is equivalent
+#                  to the -f option in samtools. The default is 0, which
+#                  includes all alignments.
+#convert to DSS format: 
+for f in *CpG.methylKit; do echo $f; python3 Bedgraph2DSS.py $f > ${f%%.*}_CG.dss; done
+for f in *CHG.methylKit; do echo $f; python3 Bedgraph2DSS.py $f > ${f%%.*}_CHG.dss; done
+for f in *CHH.methylKit; do echo $f; python3 Bedgraph2DSS.py $f > ${f%%.*}_CHH.dss; done
+
+
+###################################
+\differential methylation analysis
+###################################
+#!! The CHH files are very large, split by chromosome to analysis. Use splitMethylKit.py to split it into small files.
+#1. analyze using DSS R package.
+#transform the bedgraph format to DSS accepted format:
+for f in *DSS.bedGraph; do echo $f; python Bedgraph2DSS.py $f > ${f%%_*}.dss;done
+
+R
+library(DSS)
+require(bsseq)
+library(BiocParallel)
+#(1)load data and create object for testing
+dt1.1 = read.table("6H1_CHGb", header=TRUE)
+dt1.2 = read.table("6H2_CHGb", header=TRUE)
+dt1.3 = read.table("6H3_CHGb", header=TRUE)
+dt2.1 = read.table("621_CHGb", header=TRUE)
+dt2.2 = read.table("622_CHGb", header=TRUE)
+dt2.3 = read.table("623_CHGb", header=TRUE)
+# dt3.1 = read.table("6121_CHGb", header=TRUE)
+# dt3.2 = read.table("6122_CHGb", header=TRUE)
+# dt3.3 = read.table("6123_CHGb", header=TRUE)
+mParam = MulticoreParam(workers=8, progressbar=TRUE)
+# #-------------------------------------
+BSobj1 = makeBSseqData( list(dt1.1, dt1.2, dt1.3, dt2.1, dt2.2, dt2.3),
+                       c("C1","C2","C3", "T1", "T2","T3") )
+#(2)Perform statistical test (Wald test) for DML
+#For WGBS data, smoothing is recommended so that information from nearby CHG sites can be combined to improve the estimation of methylation levels.
+dmlTest1 = DMLtest(BSobj1, group1=c("C1", "C2","C3"), group2=c("T1", "T2","T3"), smoothing=TRUE, BPPARAM=mParam)
+#dmlTest_testing = bplapply(BSobj1,DMLtest(BSobj1, group1=c("C1", "C2","C3"), group2=c("T1", "T2","T3"), smoothing=TRUE),BPPARAM=bpparam)
+
+#(3)DML detection (loci). The results DMLs are sorted by the significance.
+dmls1 = callDML(dmlTest1, delta=0.1, p.threshold=0.001)
+#use pvalue = 0.001, around 7000 DML but FDR is around 0.5 at most; at pvalue= 0.0001, the FDR is around 0.05, around 3000 DML
+#null hypothesis that the difference in methylation levels is 0
+
+#(4)DMR detection (region), default min length 50bp, min number of CG is 3
+dmrs1 = callDMR(dmlTest1, minCG = 10, p.threshold=0.01)
+# use pvalue = 0.01, 700~900 DMR.  ~48 associated genes   16 dmr/gene
+# use pvalue = 0.005. 500~600.     ~30 associated genes.   16 dmr/gene.   the difference is ~11 dmr/gene. 
+# use pvalue = 0.001  ~200 DMR
+
+write.csv(dmls1, 'dml_CHG_2hpib.csv')
+write.csv(dmrs1, 'dmr_CHG_2hpib.csv')
+
+#plot the methylation percentages as well as the coverage depths at each CHG sites
+pdf('Top5_DMR_CHG_2hpib.pdf')
+showOneDMR(dmrs1[1,], BSobj1)
+showOneDMR(dmrs1[2,], BSobj1)
+showOneDMR(dmrs1[3,], BSobj1)
+showOneDMR(dmrs1[4,], BSobj1)
+showOneDMR(dmrs1[5,], BSobj1)
+dev.off()	
+
+####################################
+#2. analyze using metilene. DSS in R is too slow!
+# prepare input file from bedgraph format, using script provided in metiline (in software package)
+ml metilene bedtools
+# the bedtool only support standard bedgraph (4 columns), need to trim the Methyldackel bedgraph (6 columns)
+#keep only 1st four columns: chr start  end meth%     (note: number of reads/coverage in last 2 columns are lost)
+for f in *CpG.bedGraph; do cut -f 1-4 $f > ${f%%.*}.CpG.bedg; done
+for f in *CHG.bedGraph; do cut -f 1-4 $f > ${f%%.*}.CHG.bedg; done
+for f in *CHH.bedGraph; do cut -f 1-4 $f > ${f%%.*}.CHH.bedg; done
+
+#prepare the input 
+perl metilene_input.pl -in1 6H1.CpG.bedg,6H2.CpG.bedg,6H3.CpG.bedg -in2 621.CpG.bedg,623.CpG.bedg -h1 ctrl -h2 2hpi -out 2hpi_CG_metilene.input 
+perl metilene_input.pl -in1 6H1.CHG.bedg,6H2.CHG.bedg,6H3.CHG.bedg -in2 621.CHG.bedg,623.CHG.bedg -h1 ctrl -h2 2hpi -out 2hpi_CHG_metilene.input 
+perl metilene_input.pl -in1 6H1.CHH.bedg,6H2.CHH.bedg,6H3.CHH.bedg -in2 621.CHH.bedg,623.CHH.bedg -h1 ctrl -h2 2hpi -out 2hpi_CHH_metilene.input 
+
+perl metilene_input.pl -in1 6H1.CpG.bedg,6H2.CpG.bedg,6H3.CpG.bedg -in2 6121.CpG.bedg,6122.CpG.bedg,6123.CpG.bedg -h1 ctrl -h2 12hpi -out 12hpi_CG_metilene.input 
+perl metilene_input.pl -in1 6H1.CHG.bedg,6H2.CHG.bedg,6H3.CHG.bedg -in2 6121.CHG.bedg,6122.CHG.bedg,6123.CHG.bedg -h1 ctrl -h2 12hpi -out 12hpi_CHG_metilene.input 
+perl metilene_input.pl -in1 6H1.CHH.bedg,6H2.CHH.bedg,6H3.CHH.bedg -in2 6121.CHH.bedg,6122.CHH.bedg,6123.CHH.bedg -h1 ctrl -h2 12hpi -out 12hpi_CHH_metilene.input 
+# --in1   comma-seperated list of sorted bed(graph) input files of group 1
+# --in2   comma-seperated list of sorted bed(graph) input files of group 2
+# --out   path/file of out file (metilene input) (default: metilene_g1_g2.input, g1 set by --h1 option, g2 set by --h2 option)
+# --h1    identifier of group 1 (default: g1)
+# --h2    identifier of group 2 (default: g2)
+# -b  path/executable of bedtools executable (default: in PATH)
+
+# split input of CHH
+grep -f sub1.txt 2hpi_CHH_metilene.input > 2hpi_CHH_metilene_sub1.input 
+grep -f sub2.txt 2hpi_CHH_metilene.input > 2hpi_CHH_metilene_sub2.input 
+grep -f sub3.txt 2hpi_CHH_metilene.input > 2hpi_CHH_metilene_sub3.input 
+
+grep -f sub1.txt 12hpi_CHH_metilene.input > 12hpi_CHH_metilene_sub1.input 
+grep -f sub2.txt 12hpi_CHH_metilene.input > 12hpi_CHH_metilene_sub2.input 
+grep -f sub3.txt 12hpi_CHH_metilene.input > 12hpi_CHH_metilene_sub3.input 
+
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t2hpi\t2hpi' 2hpi_CHH_metilene_sub1.input 
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t2hpi\t2hpi' 2hpi_CHH_metilene_sub2.input 
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t2hpi\t2hpi' 2hpi_CHH_metilene_sub3.input 
+
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t12hpi\t12hpi\t12hpi' 12hpi_CHH_metilene_sub1.input 
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t12hpi\t12hpi\t12hpi' 12hpi_CHH_metilene_sub2.input 
+sed -i '1i chrom\tpos\tctrl\tctrl\tctrl\t12hpi\t12hpi\t12hpi' 12hpi_CHH_metilene_sub3.input 
+
+# run the software
+metilene -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CG_metilene.input | sort -V -k1,1 -k2,2n > 2hpi_CG_metilene.output
+metilene -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHG_metilene.input | sort -V -k1,1 -k2,2n > 2hpi_CHG_metilene.output
+
+metilene -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub1.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_sub1.output
+metilene -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub2.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_sub2.output
+metilene -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub3.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_sub3.output
+
+metilene -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CG_metilene.input | sort -V -k1,1 -k2,2n > 12hpi_CG_metilene.output
+metilene -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHG_metilene.input | sort -V -k1,1 -k2,2n > 12hpi_CHG_metilene.output
+
+metilene -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub1.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_sub1.output
+metilene -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub2.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_sub2.output
+metilene -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub3.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_sub3.output
+
+
+#Filter output file and plot basic DMR statistics
+ml R
+perl metilene_output.pl -q 2hpi_CG_metilene.output -o 2hpi_CG_metilene.filter -a ctrl -b 2hpi
+perl metilene_output.pl -q 2hpi_CHG_metilene.output -o 2hpi_CHG_metilene.filter -a ctrl -b 2hpi
+perl metilene_output.pl -q 2hpi_CHH_metilene_sub1.output -o 2hpi_CHH_metilene_sub1.filter -a ctrl -b 2hpi
+perl metilene_output.pl -q 2hpi_CHH_metilene_sub2.output -o 2hpi_CHH_metilene_sub2.filter -a ctrl -b 2hpi
+perl metilene_output.pl -q 2hpi_CHH_metilene_sub3.output -o 2hpi_CHH_metilene_sub3.filter -a ctrl -b 2hpi
+
+perl metilene_output.pl -q 12hpi_CG_metilene.output -o 12hpi_CG_metilene.filter -a ctrl -b 12hpi
+perl metilene_output.pl -q 12hpi_CHG_metilene.output -o 12hpi_CHG_metilene.filter -a ctrl -b 12hpi
+perl metilene_output.pl -q 12hpi_CHH_metilene.output -o 12hpi_CHH_metilene.filter -a ctrl -b 12hpi
+perl metilene_output.pl -q 12hpi_CHH_metilene_sub1.output -o 12hpi_CHH_metilene_sub1.filter -a ctrl -b 12hpi
+perl metilene_output.pl -q 12hpi_CHH_metilene_sub2.output -o 12hpi_CHH_metilene_sub2.filter -a ctrl -b 12hpi
+perl metilene_output.pl -q 12hpi_CHH_metilene_sub3.output -o 12hpi_CHH_metilene_sub3.filter -a ctrl -b 12hpi
+
+
+
+# search DMR for defined regions --- assembled DEGs.
+ml bedops
+
+
+
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CG_metilene.input | sort -V -k1,1 -k2,2n > 2hpi_CG_metilene_gene.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHG_metilene.input | sort -V -k1,1 -k2,2n > 2hpi_CHG_metilene_gene.output
+
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub1.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_gene_sub1.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub2.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_gene_sub2.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 2hpi 2hpi_CHH_metilene_sub3.input | sort -V -k1,1 -k2,2n > 2hpi_CHH_metilene_gene_sub3.output
+
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CG_metilene.input | sort -V -k1,1 -k2,2n > 12hpi_CG_metilene_gene.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHG_metilene.input | sort -V -k1,1 -k2,2n > 12hpi_CHG_metilene_gene.output
+
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub1.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_gene_sub1.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub2.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_gene_sub2.output
+metilene -f 2 -B sorted_merged_gtf.annotated_IDmodified.bed -t 20 -d 0.20 -a ctrl -b 12hpi 12hpi_CHH_metilene_sub3.input | sort -V -k1,1 -k2,2n > 12hpi_CHH_metilene_gene_sub3.output
+
+
+
+
+####################################
+#3. analyze using DMRfinder. It uses DSS wald test but with additional clustering methods, which is superior than DSS
+# Use the bedGraph format: chr start end pct meth unmethy 
+
+#Clustering CpG sites into regions
+DMRfinder/combine_CpG_sites.py -o 2dpi_vs_ctrl_CG_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 621.621_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 622.622_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 623.623_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph
+DMRfinder/combine_CpG_sites.py -o 2dpi_vs_ctrl_CHG_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 621.621_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 622.622_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 623.623_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph
+DMRfinder/combine_CpG_sites.py -b -o 2dpi_vs_ctrl_CHH_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 621.621_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 622.622_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 623.623_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph
+
+DMRfinder/combine_CpG_sites.py -o 12dpi_vs_ctrl_CG_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6121.6121_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6122.6122_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph 6123.6123_1_val_1_bismark_hisat2_pe_sorted_CpG.bedGraph
+DMRfinder/combine_CpG_sites.py -o 12dpi_vs_ctrl_CHG_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6121.6121_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6122.6122_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph 6123.6123_1_val_1_bismark_hisat2_pe_sorted_CHG.bedGraph
+DMRfinder/combine_CpG_sites.py -b -o 12dpi_vs_ctrl_CHH_combined.csv -s 2 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6121.6121_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6122.6122_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph 6123.6123_1_val_1_bismark_hisat2_pe_sorted_CHH.bedGraph
+# -b: Analyze one chromosome at a time (memory-saving)
+
+#Testing regions for differential methylation
+# this step takes too much memory, need to split the file for analysis.
+# edit line 378 of the findDMRs.r to make it sort the chromosome properly. (Based on your chr name. default format is "chr+number")
+Rscript DMRfinder/findDMRs.r -i 2dpi_vs_ctrl_CG_combined.csv -o 2dpi_CG_results.csv -q 0.05 -c 10 -n Control,2hpi  6H1,6H2,6H3  621,623
+Rscript DMRfinder/findDMRs.r -i 2dpi_vs_ctrl_CHG_combined.csv -o 2dpi_CHG_results.csv -q 0.05 -c 10 -n Control,2hpi  6H1,6H2,6H3  621,623
+Rscript DMRfinder/findDMRs.r -i 2dpi_vs_ctrl_CHH_combined.csv -o 2dpi_CHH_results.csv -q 0.05 -c 10 -n Control,2hpi  6H1,6H2,6H3  621,623
+
+Rscript DMRfinder/findDMRs.r -i 12dpi_vs_ctrl_CG_combined.csv -o 12dpi_CG_results.csv -q 0.05 -c 10 -n Control,12hpi  6H1,6H2,6H3  6121,6122,6123
+Rscript DMRfinder/findDMRs.r -i 12dpi_vs_ctrl_CHG_combined.csv -o 12dpi_CHG_results.csv -q 0.05 -c 10 -n Control,12hpi  6H1,6H2,6H3  6121,6122,6123
+Rscript DMRfinder/findDMRs.r -i 12dpi_vs_ctrl_CHH_combined.csv -o 12dpi_CHH_results.csv -q 0.05 -c 10 -n Control,12hpi  6H1,6H2,6H3  6121,6122,6123
+#default:
+    # -d <float>    Min. methylation difference between sample groups ([0-1]; def. 0.10)
+    # -p <float>    Max. p-value ([0-1]; def. 0.05)
+    # -q <float>    Max. q-value ([0-1]; def. 1)
+
+
+
+#Associate the DMR with genes
+python3 LinkDMR2Gene.py DMR_DSS_summary.csv merged_gtf.annotated_IDmodified.gtf
+
+###################################
+\visualizations for the DMC and DMR
+###################################
+#prepare annotation files for genes/transcripts/other interested regions (gff3/gtf to bed)
+module load gffread
+gffread -E merged_gtf.annotated_IDmodified.gtf -o- > assembled_trans.gff3
+# -E  expose (warn about) duplicate transcript IDs and other potential problems with the given GFF/GTF records
+# -o  the "filtered" GFF records will be written to <outfile.gff> (use -o- for printing to stdout)
+#convert gff file to bed12 format for methylation annotation
+./gff3ToGenePred NCBI_arahy.Tifrunner.gnm1.KYV3.gff3 NCBI_arahy.Tifrunner.genePred
+./genePredToBed NCBI_arahy.Tifrunner.genePred NCBI_arahy.Tifrunner.bed
+
+#use assembled genes, get the coding genes from transdecoder
+awk '{print $1}' transcripts.fa.transdecoder.gff3 | sort | uniq > asb.codingGene.txt
+# 134552 genes
+grep -f asb.codingGene.txt merged_gtf.annotated_IDmodified.gtf >asb.codingGene.gtf
+gffread -E asb.codingGene.gtf -o- > asb.codingGene.gff3
+# convert
+./gff3ToGenePred asb.codingGene.gff3 temp.genePred
+./genePredToBed temp.genePred asb.codingGene.bed
+
+
+
+
+./gff3ToGenePred -rnaNameAttr=transcript_id arahy.Tifrunner.gnm1.ann1.CCJH.repeats_complex.gff3 arahy.TE.GP
+./genePredToBed arahy.TE.GP arahy.TE.bed
+
+#1. use bedttools to associate DMR with overlapping genes
+bedtools closest -D "b" -t first -a A17vLSS_DSS_DMR_CpG-sorted.bed -b M_truncatula_Aug_2013.bed.gz > A17vLSS_DSS_DMR_CpG_nearestGenes.txt
+
+#2. use ViewBS to generate different plots for the result
+# input files: CX_report (need to be bgzip and tabix first)
+module load samtools viewbs
+bgzip -@ 20 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt
+for f in *sorted.cytosine_report.txt; do bgzip -@ 20 $f; done
+tabix -C -p vcf 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz
+for f in *sorted.cytosine_report.txt.gz; do tabix -C -p vcf $f; done
+#Generate meth coverage distribution. generate table and line distribution
+ViewBS MethCoverage --prefix Control --width 15 --height 15 --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --reference /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa --outdir methCoverage 
+
+ViewBS MethCoverage --reference /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa --outdir methCoverage --prefix Contro --width 30 --height 20 --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3
+ViewBS MethCoverage --reference /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa --outdir methCoverage --prefix 2hpi --width 30 --height 20 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3
+ViewBS MethCoverage --reference /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa --outdir methCoverage --prefix 12hpi --width 30 --height 20 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 
+
+#test 
+ViewBS MethCoverage --reference /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa --outdir methCoverage --prefix Contro --width 30 --height 20 --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 
+
+#Global methylation level (3 context)
+ViewBS GlobalMethLev --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --outdir methGlobal --prefix all_sample_context --width 18 --minDepth 2
+
+#check methylation level distribution
+ViewBS MethLevDist --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --outdir methDistribution --prefix all_sample_context
+
+#methyl geo on genomes. Usually check on one control and one treatment is enough
+#use --minLength 1Mb to filter out the scaffold
+samtools faidx /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa
+ViewBS MethGeno --genomeLength /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa.fai --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix bis_geno_sample --context CG --minLength 5000000 --outdir chromosomeMeth --maxChromNumber 20 --width 36 --height 14
+ViewBS MethGeno --genomeLength /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa.fai --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix bis_geno_sample --context CHG --minLength 5000000 --outdir chromosomeMeth --maxChromNumber 20 --width 36 --height 14
+ViewBS MethGeno --genomeLength /blue/wang/luoziliang/nodulation/genome/arahy.Tifrunner.gnm1.KYV3.genome_main.fa.fai --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix bis_geno_sample --context CHH --minLength 5000000 --outdir chromosomeMeth --maxChromNumber 20 --width 36 --height 14
+
+
+#plot meth over regions. use bed file of the region of interest(transcripts/genes/TEs). generate metaplot
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --prefix control --context CG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --prefix control --context CHG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --prefix control --context CHH --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --prefix 2hpi --context CG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --prefix 2hpi --context CHG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --prefix 2hpi --context CHH --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix 12hpi --context CG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix 12hpi --context CHG --minDepth 4 --outdir metaplot --height 12 --width 15 &
+# nohup ViewBS MethOverRegion --region NCBI_arahy.Tifrunner.bed --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix 12hpi --context CHH --minDepth 4 --outdir metaplot --height 12 --width 15 &
+
+nohup ViewBS MethOverRegion --region asb.codingGene.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix cds --context CG --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+nohup ViewBS MethOverRegion --region asb.codingGene.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix cds --context CHG --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+nohup ViewBS MethOverRegion --region asb.codingGene.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix cds --context CHH --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+
+nohup ViewBS MethOverRegion --region arahy.TE.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix all_te --context CG --binNumber 50 --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+nohup ViewBS MethOverRegion --region arahy.TE.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix all_te --context CHG --binNumber 50 --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+nohup ViewBS MethOverRegion --region arahy.TE.bed --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix all_te --context CHH --binNumber 50 --minDepth 4 --outdir metaplot --height 10 --width 11 --flank 3000 &
+
+# View specific regions, eg. DMR
+ViewBS MethOneRegion --region arahy.Tifrunner.gnm1.Arahy.18:5778801-5779249 --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3 --sample 621.621_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_1 --sample 622.622_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_2 --sample 623.623_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,2hpi_3 --sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix test1 --context CG
+ViewBS MethOneRegion --region arahy.Tifrunner.gnm1.Arahy.13:140699003-140699010 --sample 6H1.6H1_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_1 --sample 6H2.6H2_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_2 --sample 6H3.6H3_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,control_3--sample 6121.6121_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_1 --sample 6122.6122_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_2 --sample 6123.6123_1_val_1_bismark_hisat2_pe_sorted.cytosine_report.txt.gz,12hpi_3 --prefix test --context CG
+
+#heatmap of DMR regions
+#the region file format: <chromsome ID> <start position> <end position> <region ID>
+ViewBS MethHeatmap --region CHG_hypo_DMR_drm12cmt23_to_WT.txt --sample bis_WT.tab.gz,WT --sample bis_drm12cmt23.tab.gz,drm12cmt23 --sample bis_cmt23.tab.gz,cmt23 --sample bis_cmt2-3.tab.gz,cmt2-3 --sample bis_drm12cmt2.tab.gz,drm12cmt2 --prefix CHG_hypo_DMR_drm12cmt23_to_WT --context CHG --outdir MethHeatmap
+
+#3. use IGB to check specific genes methylation
+
+######
+#use galaxy for analysis
+#to use ufrc galaxy create your folder using galaxy account
+mkdir /blue/apps/galaxy/incoming/luoziliang@ufl.edu
+cd /blue/apps/galaxy/incoming/luoziliang@ufl.edu
+#copy the file need to be uploaded to the account folder
+cp /blue/wang/luoziliang/nodulation/WGBS/cegresources.icrisat.org/trimmed_reads/6H1_1_val_1.fq.gz .
+
+
+
+
+#plot with circos
+# edit the configure file accordingly circos.conf
+ml circos
+circos -conf circos.conf
+
+
+
+
+
+
+
