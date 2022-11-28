@@ -19,12 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="edit input for transcriptome file">
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/my_analysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/my_analysis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/excute_target_finder.py" beforeDir="false" afterPath="$PROJECT_DIR$/excute_target_finder.py" afterDir="false" />
-    </list>
+    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -236,7 +231,7 @@
       <workItem from="1615261815689" duration="2083000" />
       <workItem from="1639282059719" duration="719000" />
       <workItem from="1647269298863" duration="651000" />
-      <workItem from="1652971426472" duration="834000" />
+      <workItem from="1652971426472" duration="1120000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -350,7 +345,21 @@
       <option name="project" value="LOCAL" />
       <updated>1652971511123</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="add handling for target sequence gz file">
+      <created>1652972485479</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1652972485479</updated>
+    </task>
+    <task id="LOCAL-00018" summary="update">
+      <created>1652972497100</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1652972497100</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -377,9 +386,10 @@
     <MESSAGE value="merge method change to &quot;left&quot;" />
     <MESSAGE value="change file processing order. remove file extension for the output name." />
     <MESSAGE value="remove redundant gene + KO/GO rows" />
-    <MESSAGE value="update" />
     <MESSAGE value="edit input for transcriptome file" />
-    <option name="LAST_COMMIT_MESSAGE" value="edit input for transcriptome file" />
+    <MESSAGE value="add handling for target sequence gz file" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
