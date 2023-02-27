@@ -2,8 +2,8 @@
 import glob
 import pandas as pd
 
-def readFiles():
-    files = glob.glob('*Log.final.out')
+def readFiles(reg_expr):
+    files = glob.glob(reg_expr)
     num_f = len(files)
     print('%s samples (STAR output files) detected in current directory' % num_f)
     return files
@@ -31,7 +31,7 @@ def readStats(f):
     return row
 
 def main():
-    files = readFiles()
+    files = readFiles('*Log.final.out')
     data = []
     for f in files:
         alignment = readStats(f)
