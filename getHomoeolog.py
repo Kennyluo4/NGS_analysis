@@ -6,7 +6,7 @@ import pandas as pd
 def readFiles(path, reg_expr):
     path = path.strip('/')
     dir = path + '/' + reg_expr
-    print('Search: %s' % dir)
+    print('Search files: %s' % dir)
     files = glob.glob(dir)
     num_f = len(files)
     print('Working on %s detected files...' % num_f)
