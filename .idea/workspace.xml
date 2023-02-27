@@ -19,7 +19,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="" />
+    <list default="true" id="21bafbe1-a9e4-48ca-9744-4be2f7a8628e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -232,6 +234,7 @@
       <workItem from="1639282059719" duration="719000" />
       <workItem from="1647269298863" duration="651000" />
       <workItem from="1652971426472" duration="1120000" />
+      <workItem from="1676478786328" duration="772000" />
     </task>
     <task id="LOCAL-00001" summary="create file">
       <created>1588878567836</created>
@@ -359,7 +362,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652972497100</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="update the file input and handling order: append file1 to file 2 by index.">
+      <created>1676478951496</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1676478951496</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -389,7 +399,8 @@
     <MESSAGE value="edit input for transcriptome file" />
     <MESSAGE value="add handling for target sequence gz file" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="update the file input and handling order: append file1 to file 2 by index." />
+    <option name="LAST_COMMIT_MESSAGE" value="update the file input and handling order: append file1 to file 2 by index." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
