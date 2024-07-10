@@ -43,9 +43,9 @@ def main():
     for f in files:
         alignment = readStats(f)
         data.append(alignment)
-    df = pd.DataFrame(data, columns = ['Sample ID', 'TotalReadsPair', 'UniqueAlign', 'Multi-Align', 'TooManyAlign', 'Unmapped'])
+    df = pd.DataFrame(data, columns = ['Sample ID', 'TotalReadsPair', 'UniqueAlign', 'Multi-Align', 'TooManyAlign(>10)', 'Unmapped'])
     df['unique%'] = df['UniqueAlign'] / df['TotalReadsPair']
-    df['overall%'] = (df['UniqueAlign'] + df['Multi-Align'])/df['TotalReadsPair']
+    df['overall%'] = (df['UniqueAlign'] + df['Multi-Align'] + df['TooManyAlign(>10)'])/df['TotalReadsPair']
     df.to_excel(outfile,index=False)
     print(f'Outupt file: {outfile}')
 
