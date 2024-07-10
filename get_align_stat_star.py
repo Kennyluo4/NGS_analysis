@@ -1,6 +1,12 @@
 '''get the alignment statistics from STAR aligner output files:{prefix}Log.final.out'''
 import glob
 import pandas as pd
+import datetime
+
+time = datetime.datetime.now()
+
+## add time tag: year_month_day_hourmin
+run_date = '%s_%s_%s_%s%s' % (time.year, time.month, time.day, time.hour, time.minute)
 
 def readFiles(reg_expr):
     files = glob.glob(reg_expr)
@@ -32,13 +38,16 @@ def readStats(f):
 
 def main():
     files = readFiles('*Log.final.out')
+    outfile = 'STAR_alignment_statistics_' + run_date + '.xlsx'
     data = []
     for f in files:
         alignment = readStats(f)
         data.append(alignment)
     df = pd.DataFrame(data, columns = ['Sample ID', 'TotalReadsPair', 'UniqueAlign', 'Multi-Align', 'TooManyAlign', 'Unmapped'])
+    df['unique%'] = df['UniqueAlign'] / df['TotalReadsPair']
     df['overall%'] = (df['UniqueAlign'] + df['Multi-Align'])/df['TotalReadsPair']
-    df.to_excel('STAR_alignment_statistics.xlsx',index=False)
+    df.to_excel(outfile,index=False)
+    print(f'Outupt file: {outfile}')
 
 if __name__ == "__main__":
     main()
