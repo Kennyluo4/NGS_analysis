@@ -38,16 +38,20 @@ def readStats(f):
 
 def main():
     files = readFiles('*Log.final.out')
-    outfile = 'STAR_alignment_statistics_' + run_date + '.xlsx'
-    data = []
-    for f in files:
-        alignment = readStats(f)
-        data.append(alignment)
-    df = pd.DataFrame(data, columns = ['Sample ID', 'TotalReadsPair', 'UniqueAlign', 'Multi-Align', 'TooManyAlign(>10)', 'Unmapped'])
-    df['unique%'] = df['UniqueAlign'] / df['TotalReadsPair']
-    df['overall%'] = (df['UniqueAlign'] + df['Multi-Align'] + df['TooManyAlign(>10)'])/df['TotalReadsPair']
-    df.to_excel(outfile,index=False)
-    print(f'Outupt file: {outfile}')
+    num_f = len(files)
+    if num_f == 0:
+        exit()
+    else:
+        outfile = 'STAR_alignment_statistics_' + run_date + '.xlsx'
+        data = []
+        for f in files:
+            alignment = readStats(f)
+            data.append(alignment)
+        df = pd.DataFrame(data, columns = ['Sample ID', 'TotalReadsPair', 'UniqueAlign', 'Multi-Align', 'TooManyAlign(>10)', 'Unmapped'])
+        df['unique%'] = df['UniqueAlign'] / df['TotalReadsPair']
+        df['overall%'] = (df['UniqueAlign'] + df['Multi-Align'] + df['TooManyAlign(>10)'])/df['TotalReadsPair']
+        df.to_excel(outfile,index=False)
+        print(f'Outupt file: {outfile}')
 
 if __name__ == "__main__":
     main()
